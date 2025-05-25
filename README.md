@@ -1,50 +1,24 @@
-# Welcome to your Expo app 👋
+## Split Ease
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> “Effortless Group Expense Management”
 
-## Get started
+**SplitEase** is designed to simplify how groups manage shared expenses. Whether you're on a trip, living with roommates, or organizing an event, SplitEase ensures that every transaction is **fair**, **transparent**, and **effortless**.
 
-1. Install dependencies
+### Features
 
-   ```bash
-   npm install
-   ```
+-   [ ] Create & manage spending activities
+-   [ ] Add individual expenses to an activity
+-   [ ] Support for equal cost-splitting among group members
+-   [ ] Track who paid and who owes
+-   [ ] Display payment status (e.g., settled, pending)
+-   [ ] Upload and view receipts (images/files)
+-   [ ] Support expense categorization (e.g., food, travel, rent)
+-   [ ] Basic user interface using Gluestack UI + Tailwind
+-   [ ] Responsive layout for mobile screens
 
-2. Start the app
+-   [ ] Support percentage-based splits (e.g., custom ratios)
+-   [ ] Add localization support (English & Vietnamese)
+-   [ ] Implement payment reminders (push notifications or alerts)
+-   [ ] Add light/dark mode toggle
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Development
