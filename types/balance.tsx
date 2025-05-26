@@ -27,3 +27,16 @@ export type PendingGroup = {
 export type PendingGroupsListProps = {
     groups: PendingGroup[];
 };
+
+export type MarkAsPaid = {
+    id: string;
+    owner: string;
+    target: string;
+    amount: number;
+    isMe: boolean;
+    onMarkAsPaid?: () => void;
+};
+
+export type MarkAsPaidsListProps = {
+    balances: MarkAsPaid[];
+};

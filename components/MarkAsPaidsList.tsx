@@ -1,0 +1,40 @@
+import { MarkAsPaid, MarkAsPaidsListProps } from "@/types/balance";
+import React from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+import { Divider } from "./ui/divider";
+
+function MarkAsPaidItem({ balance }: { balance: MarkAsPaid }) {
+    return (
+        <View>
+            <Text className="text-center text-sm font-medium text-typography-900 mb-4 mt-1">
+                {balance.target} {balance.isMe ? "(me)" : ""}{" "}
+                {"owes " + balance.owner + "   "}
+                <Text className="text-primary-500 text-sm font-semibold">
+                    {balance.amount}
+                </Text>
+            </Text>
+
+            <TouchableOpacity className="bg-primary-500 rounded-lg py-4 items-center mb-2">
+                <Text className="text-white font-semibold">Mark As Paid</Text>
+            </TouchableOpacity>
+        </View>
+    );
+}
+
+export default function MarkAsPaidsList({ balances }: MarkAsPaidsListProps) {
+    return (
+        <View className="bg-background-50 border-border-200 border-[1px] rounded-lg p-4">
+            <FlatList
+                keyExtractor={(item) => item.id}
+                data={balances}
+                renderItem={({ item }) => (
+                    <MarkAsPaidItem balance={item}></MarkAsPaidItem>
+                )}
+                ItemSeparatorComponent={() => (
+                    <Divider className="my-4 bg-border-200" />
+                )}
+                showsVerticalScrollIndicator={false}
+            ></FlatList>
+        </View>
+    );
+}
