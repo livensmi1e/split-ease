@@ -9,7 +9,7 @@ export default function BalanceSummary({
     owesYou,
 }: BalanceSummaryProps) {
     return (
-        <HStack className="justify-between mb-4 gap-4">
+        <HStack className="justify-between gap-4">
             <Box className="flex-1 rounded-xl bg-background-900 p-4 ">
                 <Text className="text-typography-50 font-bold text-2xl mb-2">
                     {youOwe}

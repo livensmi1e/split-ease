@@ -17,7 +17,7 @@ export default function ExpenseItem({ expense }: { expense: RecentExpense }) {
             </VStack>
 
             <VStack className="items-end">
-                <Text className="text-sm font-medium text-blue-500 mb-1">
+                <Text className="text-sm font-semibold text-blue-500 mb-1">
                     ${expense.amount}
                 </Text>
                 <Text className="text-xs text-gray-500">{expense.date}</Text>

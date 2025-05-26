@@ -14,3 +14,16 @@ export type RecentExpense = {
 export type RecentExpensesListProps = {
     expenses: RecentExpense[];
 };
+
+export type PendingGroup = {
+    id: string;
+    name: string;
+    activityCount: number;
+    memberCount: number;
+    totalExpense: number;
+    myExpense: number;
+};
+
+export type PendingGroupsListProps = {
+    groups: PendingGroup[];
+};
