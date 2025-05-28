@@ -1,13 +1,14 @@
 import BalanceSummary from "@/components/BalanceSummary";
 import PendingGroupsList from "@/components/PendingGroupsList";
 import RecentExpensesList from "@/components/RecentExpensesList";
-import { PendingGroup } from "@/types/balance";
+import { RecentExpenseProps } from "@/types/expense";
+import { GroupItemProps } from "@/types/group";
 import React from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Home() {
-    const recentExpenses = [
+    const recentExpenses: RecentExpenseProps[] = [
         {
             id: "1",
             groupName: "Da Lat Trip",
@@ -51,7 +52,7 @@ export default function Home() {
             date: "Yesterday",
         },
     ];
-    const pendingGroups: PendingGroup[] = [
+    const pendingGroups: GroupItemProps[] = [
         {
             id: "1",
             name: "Da Lat Trip",
@@ -59,6 +60,8 @@ export default function Home() {
             memberCount: 3,
             totalExpense: 100,
             myExpense: 20,
+            isCompleted: false,
+            avatar: require("@/assets/images/avatar.png"),
         },
         {
             id: "2",
@@ -67,8 +70,20 @@ export default function Home() {
             memberCount: 3,
             totalExpense: 100,
             myExpense: 20,
+            isCompleted: false,
+            avatar: require("@/assets/images/avatar.png"),
         },
-    ];
+        {
+            id: "3",
+            name: "Da Lat Trip",
+            activityCount: 5,
+            memberCount: 3,
+            totalExpense: 100,
+            myExpense: 20,
+            isCompleted: true,
+            avatar: require("@/assets/images/avatar.png"),
+        },
+    ].filter((item) => !item.isCompleted);
     return (
         <SafeAreaView className="p-4 pt-0 bg-background-0 h-full flex-1">
             <Text className="text-5xl font-extrabold color-primary-500 mt-3 mb-5">

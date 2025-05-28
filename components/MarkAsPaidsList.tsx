@@ -1,9 +1,9 @@
-import { MarkAsPaid, MarkAsPaidsListProps } from "@/types/balance";
+import { MarkAsPaidProps } from "@/types/balance";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "./ui/divider";
 
-function MarkAsPaidItem({ balance }: { balance: MarkAsPaid }) {
+function MarkAsPaidItem({ balance }: { balance: MarkAsPaidProps }) {
     return (
         <View>
             <Text className="text-center text-sm font-medium text-typography-900 mb-4 mt-1">
@@ -21,7 +21,11 @@ function MarkAsPaidItem({ balance }: { balance: MarkAsPaid }) {
     );
 }
 
-export default function MarkAsPaidsList({ balances }: MarkAsPaidsListProps) {
+export default function MarkAsPaidsList({
+    balances,
+}: {
+    balances: MarkAsPaidProps[];
+}) {
     return (
         <View className="bg-background-50 border-border-200 border-[1px] rounded-lg p-4">
             <FlatList

@@ -1,11 +1,11 @@
-import { RecentExpense, RecentExpensesListProps } from "@/types/balance";
+import { RecentExpenseProps } from "@/types/expense";
 import React from "react";
 import { FlatList, Text, View } from "react-native";
 import { Box } from "./ui/box";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
 
-function ExpenseItem({ expense }: { expense: RecentExpense }) {
+function ExpenseItem({ expense }: { expense: RecentExpenseProps }) {
     return (
         <HStack className="justify-between">
             <VStack className="flex-1" space="xs">
@@ -29,7 +29,9 @@ function ExpenseItem({ expense }: { expense: RecentExpense }) {
 
 export default function RecentExpensesList({
     expenses,
-}: RecentExpensesListProps) {
+}: {
+    expenses: RecentExpenseProps[];
+}) {
     return (
         <View
             className="bg-background-50 border-border-200 border-[1px] rounded-lg p-4"

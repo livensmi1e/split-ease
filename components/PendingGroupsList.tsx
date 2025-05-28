@@ -1,4 +1,4 @@
-import { PendingGroup, PendingGroupsListProps } from "@/types/balance";
+import { GroupItemProps } from "@/types/group";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import React from "react";
@@ -7,7 +7,7 @@ import { Box } from "./ui/box";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
 
-function PendingGroupItem({ group }: { group: PendingGroup }) {
+function PendingGroupItem({ group }: { group: GroupItemProps }) {
     const windowWidth = Dimensions.get("window").width - 32;
     return (
         <View
@@ -45,7 +45,11 @@ function PendingGroupItem({ group }: { group: PendingGroup }) {
     );
 }
 
-export default function PendingGroupsList({ groups }: PendingGroupsListProps) {
+export default function PendingGroupsList({
+    groups,
+}: {
+    groups: GroupItemProps[];
+}) {
     const windowWidth = Dimensions.get("window").width;
     return (
         <FlatList
