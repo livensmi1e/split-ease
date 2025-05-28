@@ -1,27 +1,57 @@
 import { GroupItemProps } from "@/types/group";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import React from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
 
 function GroupItem({ group }: { group: GroupItemProps }) {
+    const [menuVisible, setMenuVisible] = useState(false);
+    const toggleMenu = () => {
+        setMenuVisible(!menuVisible);
+    };
+    const handleEdit = () => {
+        setMenuVisible(false);
+        // TODO: Navigate or open edit modal
+        console.log("Edit group:", group.id);
+    };
+    const handleDelete = () => {
+        setMenuVisible(false);
+        // TODO: Confirm delete
+        console.log("Remove group:", group.id);
+    };
     return (
-        <View className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl">
+        <TouchableOpacity className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl mb-4">
             <View className="flex-row justify-between items-start mb-4">
                 <View className="flex justify-center items-center bg-primary-0 p-2 px-8 rounded-sm rounded-tl-xl">
                     <Text className="font-semibold text-primary-800">
                         {group.name}
                     </Text>
                 </View>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={toggleMenu}>
                     <FontAwesome
                         name="bars"
                         size={20}
                         color="#666"
                     ></FontAwesome>
                 </TouchableOpacity>
+                {menuVisible && (
+                    <View className="absolute right-[-1] top-8 bg-white shadow-lg rounded-md  z-10">
+                        <TouchableOpacity
+                            onPress={handleEdit}
+                            className="px-4 py-2"
+                        >
+                            <Text>Edit group</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={handleDelete}
+                            className="px-4 py-2 bg-[#FEF1F1]"
+                        >
+                            <Text className="text-[#991B1B]">Remove group</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </View>
             <View className="flex-row items-center gap-6">
                 <Image
@@ -74,14 +104,19 @@ function GroupItem({ group }: { group: GroupItemProps }) {
                     </VStack>
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
 }
 
 export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
     return (
         <View>
-            <GroupItem group={groups[0]}></GroupItem>
+            {/* <GroupItem group={groups[0]}></GroupItem> */}
+            <FlatList
+                data={groups}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => <GroupItem group={item}></GroupItem>}
+            ></FlatList>
         </View>
     );
 }
