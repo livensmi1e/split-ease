@@ -2,6 +2,7 @@ import { GroupItemProps } from "@/types/group";
 import { Feather } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import React, { useState } from "react";
 import {
     FlatList,
@@ -109,6 +110,17 @@ function GroupItem({ group }: { group: GroupItemProps }) {
                                     : "Not Completed"}
                             </Text>
                         </HStack>
+                        {/* <Pressable
+                            style={({ pressed }) => [
+                                {
+                                    opacity: pressed ? 0.5 : 1,
+                                },
+                            ]}
+                        >
+                            <Text className="text-primary-500 font-semibold">
+                                SEE MORE
+                            </Text>
+                        </Pressable> */}
                     </VStack>
                 </View>
             </View>
@@ -119,19 +131,18 @@ function GroupItem({ group }: { group: GroupItemProps }) {
 export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
     const [isSearching, setIsSearching] = useState(false);
     const [searchText, setSearchText] = useState("");
+    const tabBarHeight = useBottomTabBarHeight();
     const renderHeader = () => (
         <View
-            className={
-                "flex-row items-center mb-6 h-14" + isSearching
-                    ? "gap-4"
-                    : "justify-between"
-            }
+            className={`flex-row items-center mb-6 h-14 ${
+                isSearching ? "gap-4" : "justify-between"
+            }`}
         >
             {isSearching ? (
                 <View className=" bg-background-50 rounded-xl flex-row items-center px-4 flex-1">
-                    <Feather name="search" size={16} color="#555" />
+                    <Feather name="search" size={16} color="#666" />
                     <TextInput
-                        className="text-md font-normal text-typography-600 ml-2"
+                        className="text-md font-normal text-typography-600 ml-2 flex-1"
                         placeholder="Search"
                         value={searchText}
                         onChangeText={setSearchText}
@@ -143,7 +154,7 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
                             setIsSearching(false);
                         }}
                     >
-                        <Feather name="x" size={16} color="#555" />
+                        <Feather name="x" size={16} color="#666" />
                     </TouchableOpacity>
                 </View>
             ) : (
@@ -165,6 +176,7 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
                 renderItem={({ item }) => <GroupItem group={item}></GroupItem>}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={renderHeader}
+                contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
             ></FlatList>
         </View>
     );

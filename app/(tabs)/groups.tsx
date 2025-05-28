@@ -53,6 +53,16 @@ export default function Groups() {
             isCompleted: false,
             avatar: require("@/assets/images/avatar.png"),
         },
+        {
+            id: "4",
+            name: "Da Lat Trip",
+            memberCount: 3,
+            activityCount: 5,
+            totalExpense: 100,
+            myExpense: 20,
+            isCompleted: false,
+            avatar: require("@/assets/images/avatar.png"),
+        },
     ];
     return (
         <SafeAreaView className="p-4 bg-background-0 h-full flex-1">
