@@ -1,8 +1,16 @@
 import { GroupItemProps } from "@/types/group";
+import { Feather } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import React, { useState } from "react";
-import { FlatList, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+    FlatList,
+    Image,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
 
@@ -109,13 +117,54 @@ function GroupItem({ group }: { group: GroupItemProps }) {
 }
 
 export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
+    const [isSearching, setIsSearching] = useState(false);
+    const [searchText, setSearchText] = useState("");
+    const renderHeader = () => (
+        <View
+            className={
+                "flex-row items-center mb-6 h-14" + isSearching
+                    ? "gap-4"
+                    : "justify-between"
+            }
+        >
+            {isSearching ? (
+                <View className=" bg-background-50 rounded-xl flex-row items-center px-4 flex-1">
+                    <Feather name="search" size={16} color="#555" />
+                    <TextInput
+                        className="text-md font-normal text-typography-600 ml-2"
+                        placeholder="Search"
+                        value={searchText}
+                        onChangeText={setSearchText}
+                        autoFocus
+                    />
+                    <TouchableOpacity
+                        onPress={() => {
+                            setSearchText("");
+                            setIsSearching(false);
+                        }}
+                    >
+                        <Feather name="x" size={16} color="#555" />
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                <TouchableOpacity onPress={() => setIsSearching(true)}>
+                    <Feather name="search" size={24} color="#1D63ED" />
+                </TouchableOpacity>
+            )}
+            <TouchableOpacity className="bg-primary-600 p-3 flex-row items-center gap-2 rounded-xl h-14">
+                <Feather name="plus" color="#fff" size={20}></Feather>
+                <Text className="text-white text-md">Add Group</Text>
+            </TouchableOpacity>
+        </View>
+    );
     return (
         <View>
-            {/* <GroupItem group={groups[0]}></GroupItem> */}
             <FlatList
                 data={groups}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <GroupItem group={item}></GroupItem>}
+                showsVerticalScrollIndicator={false}
+                ListHeaderComponent={renderHeader}
             ></FlatList>
         </View>
     );
