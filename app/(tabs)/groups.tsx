@@ -1,4 +1,5 @@
 import GroupsList from "@/components/GroupsList";
+import MemberBalanceCard from "@/components/MemberBalanceCard";
 import { MarkAsPaidProps } from "@/types/balance";
 import { GroupItemProps } from "@/types/group";
 import React from "react";
@@ -70,6 +71,11 @@ export default function Groups() {
                 <MarkAsPaidsList balances={balances}></MarkAsPaidsList>
             </View> */}
             <Text className="text-4xl font-bold mb-10">Your Groups</Text>
+            <View className="mb-4">
+                <MemberBalanceCard
+                    member={{ memberName: "Member 2", owes: 10, pays: 20 }}
+                ></MemberBalanceCard>
+            </View>
             <View className="flex-1">
                 <GroupsList groups={groups}></GroupsList>
             </View>

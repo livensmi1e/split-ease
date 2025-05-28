@@ -11,3 +11,9 @@ export type MarkAsPaidProps = {
     isMe: boolean;
     onMarkAsPaid?: () => void;
 };
+
+export type MemberBalanceProps = {
+    pays: number;
+    owes: number;
+    memberName: string;
+};
