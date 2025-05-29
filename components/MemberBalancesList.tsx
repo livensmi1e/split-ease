@@ -4,6 +4,39 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
+// const members: MemberBalanceProps[] = [
+//     {
+//         id: "1",
+//         pays: 10,
+//         owes: 10,
+//         memberName: "Member 2",
+//     },
+//     {
+//         id: "2",
+//         pays: 10,
+//         owes: 10,
+//         memberName: "Member 2",
+//     },
+//     {
+//         id: "3",
+//         pays: 10,
+//         owes: 10,
+//         memberName: "Member 2",
+//     },
+//     {
+//         id: "4",
+//         pays: 10,
+//         owes: 10,
+//         memberName: "Member 2",
+//     },
+//     {
+//         id: "5",
+//         pays: 10,
+//         owes: 10,
+//         memberName: "Member 2",
+//     },
+// ];
+
 function MemberBalanceItem({ member }: { member: MemberBalanceProps }) {
     return (
         <View className="flex-row justify-between items-center bg-background-50 rounded-xl p-4 mb-4">

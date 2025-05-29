@@ -3,6 +3,23 @@ import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 import { Divider } from "./ui/divider";
 
+const balances: MarkAsPaidProps[] = [
+    {
+        id: "1",
+        owner: "Member 1",
+        target: "Member 2",
+        amount: 10,
+        isMe: false,
+    },
+    {
+        id: "2",
+        owner: "Member 1",
+        target: "Member 2",
+        amount: 10,
+        isMe: true,
+    },
+];
+
 function MarkAsPaidItem({ balance }: { balance: MarkAsPaidProps }) {
     return (
         <View>

@@ -1,11 +1,13 @@
+import ExpensesList from "@/components/ExpensesList";
 import { useState } from "react";
 import { Pressable, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { SceneMap, TabView } from "react-native-tab-view";
+import { TabView } from "react-native-tab-view";
 
 const ExpensesRoute = () => (
     <View className="flex-1 bg-white p-4">
-        <Text className="text-lg">Expenses content</Text>
+        <Text className="text-lg mb-4">Expenses content</Text>
+        <ExpensesList></ExpensesList>
     </View>
 );
 
@@ -30,11 +32,18 @@ const routes = [
 export default function Test() {
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
-    const renderScene = SceneMap({
-        expenses: ExpensesRoute,
-        balances: BalancesRoute,
-        photos: PhotosRoute,
-    });
+    const renderScene = ({ route }: { route: { key: string } }) => {
+        switch (route.key) {
+            case "expenses":
+                return <ExpensesRoute />;
+            case "balances":
+                return <BalancesRoute />;
+            case "photos":
+                return <PhotosRoute />;
+            default:
+                return null;
+        }
+    };
     const renderTabBar = () => (
         <View className="flex-row bg-gray-100 rounded-xl p-2 my-4 mx-2">
             {routes.map((route, i) => {
