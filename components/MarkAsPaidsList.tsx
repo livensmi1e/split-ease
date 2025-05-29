@@ -31,7 +31,7 @@ function MarkAsPaidItem({ balance }: { balance: MarkAsPaidProps }) {
                 </Text>
             </Text>
 
-            <TouchableOpacity className="bg-primary-500 rounded-lg py-4 items-center mb-2">
+            <TouchableOpacity className="bg-primary-500 rounded-lg py-3 items-center mb-2">
                 <Text className="text-white font-semibold">Mark As Paid</Text>
             </TouchableOpacity>
         </View>
