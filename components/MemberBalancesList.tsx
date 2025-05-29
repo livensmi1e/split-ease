@@ -1,0 +1,59 @@
+import { MemberBalanceProps } from "@/types/balance";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import React from "react";
+import { FlatList, Text, TouchableOpacity, View } from "react-native";
+
+function MemberBalanceItem({ member }: { member: MemberBalanceProps }) {
+    return (
+        <View className="flex-row justify-between items-center bg-background-50 rounded-xl p-4 mb-4">
+            <View className="flex-row items-center gap-4">
+                <FontAwesome5
+                    name="user-circle"
+                    color="#666"
+                    size={32}
+                    solid={true}
+                ></FontAwesome5>
+                <View>
+                    <Text className="text-typography-900 font-semibold mb-1">
+                        {member.memberName}
+                    </Text>
+                    <View className="flex-row gap-2">
+                        <Text className="text-sm">Pays ${member.pays}</Text>
+                        <Text>|</Text>
+                        <Text className="text-sm">Owes ${member.owes}</Text>
+                    </View>
+                </View>
+            </View>
+            <TouchableOpacity>
+                <FontAwesome
+                    name="angle-right"
+                    color="#666"
+                    size={32}
+                ></FontAwesome>
+            </TouchableOpacity>
+        </View>
+    );
+}
+
+export default function MemberBalancesList({
+    members,
+}: {
+    members: MemberBalanceProps[];
+}) {
+    const tabBarHeight = useBottomTabBarHeight();
+    return (
+        <View>
+            <FlatList
+                data={members}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <MemberBalanceItem member={item}></MemberBalanceItem>
+                )}
+                showsVerticalScrollIndicator={false}
+                scrollEnabled={false}
+                contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
+            ></FlatList>
+        </View>
+    );
+}

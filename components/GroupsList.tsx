@@ -140,13 +140,12 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
         >
             {isSearching ? (
                 <View className=" bg-background-50 rounded-xl flex-row items-center px-4 flex-1">
-                    <Feather name="search" size={16} color="#666" />
+                    <Feather name="search" size={18} color="#666" />
                     <TextInput
                         className="text-md font-normal text-typography-600 ml-2 flex-1"
                         placeholder="Search"
                         value={searchText}
                         onChangeText={setSearchText}
-                        autoFocus
                     />
                     <TouchableOpacity
                         onPress={() => {
@@ -154,7 +153,7 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
                             setIsSearching(false);
                         }}
                     >
-                        <Feather name="x" size={16} color="#666" />
+                        <Feather name="x" size={20} color="#666" />
                     </TouchableOpacity>
                 </View>
             ) : (

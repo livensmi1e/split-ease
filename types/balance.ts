@@ -13,6 +13,7 @@ export type MarkAsPaidProps = {
 };
 
 export type MemberBalanceProps = {
+    id: string;
     pays: number;
     owes: number;
     memberName: string;
