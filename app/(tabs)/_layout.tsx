@@ -56,6 +56,15 @@ export default function TabLayout() {
                         ),
                     }}
                 />
+                <Tabs.Screen
+                    name="test"
+                    options={{
+                        title: "Test",
+                        tabBarIcon: ({ color }) => (
+                            <FontAwesome name="gear" size={24} color={color} />
+                        ),
+                    }}
+                />
             </Tabs>
         </SafeAreaView>
     );
