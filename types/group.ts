@@ -8,3 +8,5 @@ export type GroupItemProps = {
     isCompleted: boolean;
     avatar: any;
 };
+
+export type RowData = Record<string, any>;

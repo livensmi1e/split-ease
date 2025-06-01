@@ -1,6 +1,7 @@
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
+import SchemaView from "@/db/schemaView";
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Pressable, Text, useWindowDimensions, View } from "react-native";
@@ -94,56 +95,59 @@ const routes = [
     { key: "photos", title: "Photos" },
 ];
 
-export default function Test() {
-    const layout = useWindowDimensions();
-    const [index, setIndex] = useState(0);
-    const renderScene = ({ route }: { route: { key: string } }) => {
-        switch (route.key) {
-            case "expenses":
-                return <ExpensesRoute />;
-            case "balances":
-                return <BalancesRoute />;
-            case "photos":
-                return <PhotosRoute />;
-            default:
-                return null;
-        }
-    };
-    const renderTabBar = () => (
-        <View className="flex-row bg-background-50 rounded-xl p-2 my-4 mx-2">
-            {routes.map((route, i) => {
-                const focused = i === index;
-                return (
-                    <Pressable
-                        key={route.key}
-                        className={`flex-1 py-3 rounded-xl items-center ${
-                            focused ? "bg-blue-600" : ""
-                        }`}
-                        onPress={() => setIndex(i)}
-                    >
-                        <Text
-                            className={`text-sm ${
-                                focused ? "text-white font-bold" : "text-black"
-                            }`}
-                        >
-                            {route.title}
-                        </Text>
-                    </Pressable>
-                );
-            })}
-        </View>
-    );
+// export default function Test() {
+//     const layout = useWindowDimensions();
+//     const [index, setIndex] = useState(0);
+//     const renderScene = ({ route }: { route: { key: string } }) => {
+//         switch (route.key) {
+//             case "expenses":
+//                 return <ExpensesRoute />;
+//             case "balances":
+//                 return <BalancesRoute />;
+//             case "photos":
+//                 return <PhotosRoute />;
+//             default:
+//                 return null;
+//         }
+//     };
+//     const renderTabBar = () => (
+//         <View className="flex-row bg-background-50 rounded-xl p-2 my-4 mx-2">
+//             {routes.map((route, i) => {
+//                 const focused = i === index;
+//                 return (
+//                     <Pressable
+//                         key={route.key}
+//                         className={`flex-1 py-3 rounded-xl items-center ${
+//                             focused ? "bg-blue-600" : ""
+//                         }`}
+//                         onPress={() => setIndex(i)}
+//                     >
+//                         <Text
+//                             className={`text-sm ${
+//                                 focused ? "text-white font-bold" : "text-black"
+//                             }`}
+//                         >
+//                             {route.title}
+//                         </Text>
+//                     </Pressable>
+//                 );
+//             })}
+//         </View>
+//     );
 
-    return (
-        <SafeAreaView className="bg-white h-full flex-1">
-            {renderTabBar()}
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width: layout.width }}
-                renderTabBar={() => null}
-            />
-        </SafeAreaView>
-    );
+//     return (
+//         <SafeAreaView className="bg-white h-full flex-1">
+//             {renderTabBar()}
+//             <TabView
+//                 navigationState={{ index, routes }}
+//                 renderScene={renderScene}
+//                 onIndexChange={setIndex}
+//                 initialLayout={{ width: layout.width }}
+//                 renderTabBar={() => null}
+//             />
+//         </SafeAreaView>
+//     );
+// }
+export default function Test(){
+    return <SchemaView/>
 }

@@ -51,11 +51,9 @@ export const initDatabase = async () => {
     }
 };
 
-export const getDb = () => {
-    if (!db) {
-        throw new Error(
-            "Database chưa được khởi tạo. Hãy gọi initDatabase() trước."
-        );
-    }
-    return db;
+export const getDb = async (): Promise<SQLite.SQLiteDatabase> => {
+  if (!db) {
+    db = await initDatabase();
+  }
+  return db;
 };
