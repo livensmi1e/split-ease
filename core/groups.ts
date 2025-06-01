@@ -7,12 +7,12 @@ import * as SQLite from 'expo-sqlite'
 export async function createGroup(name: string, currency: string){
     try{
         let db: SQLite.SQLiteDatabase = await getDb();
-        await db.runAsync('INSERT INTO group_table (name, currency) VALUES (?, ?)', [name, currency])
-        return true;
+        const result = await db.runAsync('INSERT INTO group_table (name, currency) VALUES (?, ?)', [name, currency])
+        return result;
     }
     catch(error){
         console.error("Fail to create group: ", error);
-        return false;
+        return null;
     }
 }
 

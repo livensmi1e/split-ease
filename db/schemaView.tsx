@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SQLiteDatabase } from 'expo-sqlite';
-import { getDb, initDatabase } from './initdb';
+import { dropAllTables, getDb, initDatabase } from './initdb';
 import {createGroup, getAllGroup} from '@/core/groups';
 import { RowData } from '@/types/group';
 import { createExpense } from '@/core/expenses';
@@ -64,6 +64,7 @@ function SchemaView() {
     // await createGroup("passiondev", "USD");
     // const result = await createExpense("Food", 1000, 2);
     const reuslt = await getAllGroup();
+    // dropAllTables(db);
     console.log(reuslt);
     // console.log(result);
     Alert.alert('Đã thêm dữ liệu mẫu');

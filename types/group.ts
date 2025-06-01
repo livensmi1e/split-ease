@@ -15,4 +15,10 @@ export type GroupUpdate = {
     currency: string;
 }
 
+export interface Participant {
+  id: number;
+  name: string;
+}
+
+
 export type RowData = Record<string, any>;
