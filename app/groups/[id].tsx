@@ -5,14 +5,14 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import {
-    Animated,
-    BackHandler,
-    Easing,
-    Image,
-    Pressable,
-    Text,
-    useWindowDimensions,
-    View,
+  Animated,
+  BackHandler,
+  Easing,
+  Image,
+  Pressable,
+  Text,
+  useWindowDimensions,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabView } from "react-native-tab-view";
@@ -48,6 +48,50 @@ const getGroupDataById = (id: string | string[] | undefined) => {
   };
 };
 
+const ExpensesRoute = () => (
+  <View className="flex-1 bg-white p-4">
+    <Text className="text-lg mb-4">Expenses content</Text>
+    <ExpensesList />
+  </View>
+);
+
+const BalancesRoute = ({group}:{group: any}) => (
+  <View className="flex-1 bg-white px-4 pt-4">
+    <Text className="text-typography-700 font-medium text-base mb-4">
+      Pending Balances
+    </Text>
+    <View className="mb-6">
+      <MarkAsPaidsList balances={group.balances} />
+    </View>
+    <Text className="text-typography-700 font-medium text-base mb-4">
+      See group member balances
+    </Text>
+    <View>
+      <MemberBalancesList members={group.members} />
+    </View>
+  </View>
+);
+
+const PhotosRoute = () => (
+  <View className="flex-1 bg-white p-6 items-center">
+    <View className="w-24 h-24 rounded-full bg-primary-0 items-center justify-center mb-6 p-3">
+      <Ionicons name="camera-outline" size={48} color="#000" />
+    </View>
+    <Text className="text-lg font-semibold mb-2 text-typography-900">
+      Start sharing photos
+    </Text>
+    <Text className="text-center text-typography-700 px-8">
+      Add a photo by tapping on the camera to start sharing
+    </Text>
+  </View>
+);
+
+const routes = [
+  { key: "expenses", title: "Expenses" },
+  { key: "balances", title: "Balances" },
+  { key: "photos", title: "Photos" },
+];
+
 export default function GroupDetail() {
   const { id } = useLocalSearchParams();
   const group = getGroupDataById(id); // Mock function - Need to be replaced by actual function
@@ -56,56 +100,12 @@ export default function GroupDetail() {
   const router = useRouter();
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  const ExpensesRoute = () => (
-    <View className="flex-1 bg-white p-4">
-      <Text className="text-lg mb-4">Expenses content</Text>
-      <ExpensesList />
-    </View>
-  );
-
-  const BalancesRoute = () => (
-    <View className="flex-1 bg-white px-4 pt-4">
-      <Text className="text-typography-700 font-medium text-base mb-4">
-        Pending Balances
-      </Text>
-      <View className="mb-6">
-        <MarkAsPaidsList balances={group.balances} />
-      </View>
-      <Text className="text-typography-700 font-medium text-base mb-4">
-        See group member balances
-      </Text>
-      <View>
-        <MemberBalancesList members={group.members} />
-      </View>
-    </View>
-  );
-
-  const PhotosRoute = () => (
-    <View className="flex-1 bg-white p-6 items-center">
-      <View className="w-24 h-24 rounded-full bg-primary-0 items-center justify-center mb-6 p-3">
-        <Ionicons name="camera-outline" size={48} color="#000" />
-      </View>
-      <Text className="text-lg font-semibold mb-2 text-typography-900">
-        Start sharing photos
-      </Text>
-      <Text className="text-center text-typography-700 px-8">
-        Add a photo by tapping on the camera to start sharing
-      </Text>
-    </View>
-  );
-
-  const routes = [
-    { key: "expenses", title: "Expenses" },
-    { key: "balances", title: "Balances" },
-    { key: "photos", title: "Photos" },
-  ];
-
   const renderScene = ({ route }: { route: { key: string } }) => {
     switch (route.key) {
       case "expenses":
         return <ExpensesRoute />;
       case "balances":
-        return <BalancesRoute />;
+        return <BalancesRoute group={group}/>;
       case "photos":
         return <PhotosRoute />;
       default:
