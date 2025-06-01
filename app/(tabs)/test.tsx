@@ -181,7 +181,7 @@ export default function Test() {
                 <Pressable onPress={backAction}>
                     <Ionicons name="arrow-back" size={24} color="#000000"/>
                 </Pressable>
-                <Ionicons onPress={handleSettingRoute} name="ellipsis-horizontal" size={24} color="#000000"/>
+                <Ionicons name="ellipsis-horizontal" size={24} color="#000000"/>
             </View>
             {/* Trip info */}
             <View className="px-8 -mt-10">
@@ -198,10 +198,10 @@ export default function Test() {
             </View>
             {/* Trip next */}
             <View className="bg-white px-8">
-                <Text className="text-black font-bold text-xl text-typography-950">{headers.title}</Text>
+                <Text className="font-bold text-xl text-typography-950">{headers.title}</Text>
                 <View className="flex-row mt-1">
-                    <Text className="text-black text-xs text-typography-950">{headers.numMembers} members</Text>
-                    <Text className="text-black text-xs text-typography-950 px-2">{headers.numExpenses} expenses</Text>
+                    <Text className="text-xs text-typography-950">{headers.numMembers} members</Text>
+                    <Text className="text-xs text-typography-950 px-2">{headers.numExpenses} expenses</Text>
                 </View>
             </View>
         </View>
@@ -209,7 +209,7 @@ export default function Test() {
     
     return (
         <SafeAreaView className="bg-white h-full flex-1">
-            <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+            <Animated.View style={{ opacity: fadeAnim }}>
                 {renderHeader()}
             </Animated.View>
             {renderTabBar()}
