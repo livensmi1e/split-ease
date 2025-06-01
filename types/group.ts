@@ -9,4 +9,10 @@ export type GroupItemProps = {
     avatar: any;
 };
 
+export type GroupUpdate = {
+    id: string;
+    name: string;
+    currency: string;
+}
+
 export type RowData = Record<string, any>;

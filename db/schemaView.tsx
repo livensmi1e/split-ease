@@ -4,6 +4,7 @@ import { SQLiteDatabase } from 'expo-sqlite';
 import { getDb, initDatabase } from './initdb';
 import {createGroup, getAllGroup} from '@/core/groups';
 import { RowData } from '@/types/group';
+import { createExpense } from '@/core/expenses';
 interface Table {
   name: string;
 }
@@ -60,19 +61,33 @@ function SchemaView() {
     if (!db) return;
 
     try {
-      // createGroup("passiondev", "USD");
-      const result  = await getAllGroup();
-      console.log(result);
-      Alert.alert('Đã thêm dữ liệu mẫu vào group_table');
+    // await createGroup("passiondev", "USD");
+    // const result = await createExpense("Food", 1000, 2);
+    const reuslt = await getAllGroup();
+    console.log(reuslt);
+    // console.log(result);
+    Alert.alert('Đã thêm dữ liệu mẫu');
 
-      if (expandedTables.has('group_table')) {
-        const rows: RowData[] = await db.getAllAsync(`SELECT * FROM group_table`);
-        setTableData(prev => ({ ...prev, group_table: rows }));
+    if (!db) return;
+
+    const newTableData: Record<string, RowData[]> = {};
+
+    for (const table of tables) {
+      try {
+        const rows: RowData[] = await db.getAllAsync(`SELECT * FROM ${table.name}`);
+        newTableData[table.name] = rows;
+      } catch (err) {
+        console.error(`Lỗi khi load lại bảng ${table.name}:`, err);
+        newTableData[table.name] = [{ error: 'Query failed' }];
       }
-    } catch (err) {
-      console.error('Lỗi thêm dữ liệu mẫu:', err);
-      Alert.alert('Thất bại khi thêm dữ liệu');
     }
+    setTableData(newTableData);
+
+  } catch (err) {
+    console.error(' Lỗi thêm dữ liệu mẫu:', err);
+    Alert.alert('Thất bại khi thêm dữ liệu');
+  }
+
   };
 
   return (
