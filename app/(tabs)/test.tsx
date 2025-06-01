@@ -1,12 +1,9 @@
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
+import SchemaView from "@/db/schemaView";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import { Animated, BackHandler, Easing, Image, Pressable, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TabView } from "react-native-tab-view";
+import { Text, View } from "react-native";
 
 const balances = [
     {
@@ -103,123 +100,126 @@ const routes = [
     { key: "photos", title: "Photos" },
 ];
 
-export default function Test() {
-    const layout = useWindowDimensions();
-    const [index, setIndex] = useState(0);
-    const router = useRouter();
-    const fadeAnim = useRef(new Animated.Value(1)).current;
-    const scaleAnim = useRef(new Animated.Value(1)).current;
-    const renderScene = ({ route }: { route: { key: string } }) => {
-        switch (route.key) {
-            case "expenses":
-                return <ExpensesRoute />;
-            case "balances":
-                return <BalancesRoute />;
-            case "photos":
-                return <PhotosRoute />;
-            default:
-                return null;
-        }
-    };
-    const renderTabBar = () => (
-        <View className="flex-row bg-background-50 rounded-xl p-2 my-4 mx-2">
-            {routes.map((route, i) => {
-                const focused = i === index;
-                return (
-                    <Pressable
-                        key={route.key}
-                        className={`flex-1 py-3 rounded-xl items-center ${
-                            focused ? "bg-blue-600" : ""
-                        }`}
-                        onPress={() => setIndex(i)}
-                    >
-                        <Text
-                            className={`text-sm ${
-                                focused ? "text-white font-bold" : "text-black"
-                            }`}
-                        >
-                            {route.title}
-                        </Text>
-                    </Pressable>
-                );
-            })}
-        </View>
-    );
+// export default function Test() {
+//     const layout = useWindowDimensions();
+//     const [index, setIndex] = useState(0);
+//     const router = useRouter();
+//     const fadeAnim = useRef(new Animated.Value(1)).current;
+//     const scaleAnim = useRef(new Animated.Value(1)).current;
+//     const renderScene = ({ route }: { route: { key: string } }) => {
+//         switch (route.key) {
+//             case "expenses":
+//                 return <ExpensesRoute />;
+//             case "balances":
+//                 return <BalancesRoute />;
+//             case "photos":
+//                 return <PhotosRoute />;
+//             default:
+//                 return null;
+//         }
+//     };
+//     const renderTabBar = () => (
+//         <View className="flex-row bg-background-50 rounded-xl p-2 my-4 mx-2">
+//             {routes.map((route, i) => {
+//                 const focused = i === index;
+//                 return (
+//                     <Pressable
+//                         key={route.key}
+//                         className={`flex-1 py-3 rounded-xl items-center ${
+//                             focused ? "bg-blue-600" : ""
+//                         }`}
+//                         onPress={() => setIndex(i)}
+//                     >
+//                         <Text
+//                             className={`text-sm ${
+//                                 focused ? "text-white font-bold" : "text-black"
+//                             }`}
+//                         >
+//                             {route.title}
+//                         </Text>
+//                     </Pressable>
+//                 );
+//             })}
+//         </View>
+//     );
 
-    const fadeAndNavigate = (action: any) => {
-        Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 200,
-            easing: Easing.in(Easing.ease),
-            useNativeDriver: true,
-        }).start(() => {
-            action();
-            fadeAnim.setValue(1);
-        });
-    };
+//     const fadeAndNavigate = (action: any) => {
+//         Animated.timing(fadeAnim, {
+//             toValue: 0,
+//             duration: 200,
+//             easing: Easing.in(Easing.ease),
+//             useNativeDriver: true,
+//         }).start(() => {
+//             action();
+//             fadeAnim.setValue(1);
+//         });
+//     };
 
-    const backAction = () => {
-        fadeAndNavigate(() => router.back());
-        return true;
-      };
+//     const backAction = () => {
+//         fadeAndNavigate(() => router.back());
+//         return true;
+//       };
       
-    const handleSettingRoute = () => {
-        fadeAndNavigate(() => router.push("/(tabs)/settings"));
-    };
+//     const handleSettingRoute = () => {
+//         fadeAndNavigate(() => router.push("/(tabs)/settings"));
+//     };
 
-    useEffect(() => {
-        const backHandler = BackHandler.addEventListener(
-            'hardwareBackPress',
-            backAction,
-        );
-        return () => backHandler.remove();
-    }, []);
+//     useEffect(() => {
+//         const backHandler = BackHandler.addEventListener(
+//             'hardwareBackPress',
+//             backAction,
+//         );
+//         return () => backHandler.remove();
+//     }, []);
 
-    const renderHeader = () => (
-        <View className="mb-2">
-            <View className="flex-row items-top pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
-                <Pressable onPress={backAction}>
-                    <Ionicons name="arrow-back" size={24} color="#000000"/>
-                </Pressable>
-                <Ionicons name="ellipsis-horizontal" size={24} color="#000000"/>
-            </View>
-            {/* Trip info */}
-            <View className="px-8 -mt-10">
-                <Image 
-                        source={headers.image} 
-                        style={{ 
-                            width: 80, 
-                            height: 80, 
-                            borderRadius: 8, 
-                            borderWidth: 2, 
-                            borderColor: "white",
-                        }}
-                    />
-            </View>
-            {/* Trip next */}
-            <View className="bg-white px-8">
-                <Text className="font-bold text-xl text-typography-950">{headers.title}</Text>
-                <View className="flex-row mt-1">
-                    <Text className="text-xs text-typography-950">{headers.numMembers} members</Text>
-                    <Text className="text-xs text-typography-950 px-2">{headers.numExpenses} expenses</Text>
-                </View>
-            </View>
-        </View>
-    );
+//     const renderHeader = () => (
+//         <View className="mb-2">
+//             <View className="flex-row items-top pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
+//                 <Pressable onPress={backAction}>
+//                     <Ionicons name="arrow-back" size={24} color="#000000"/>
+//                 </Pressable>
+//                 <Ionicons name="ellipsis-horizontal" size={24} color="#000000"/>
+//             </View>
+//             {/* Trip info */}
+//             <View className="px-8 -mt-10">
+//                 <Image 
+//                         source={headers.image} 
+//                         style={{ 
+//                             width: 80, 
+//                             height: 80, 
+//                             borderRadius: 8, 
+//                             borderWidth: 2, 
+//                             borderColor: "white",
+//                         }}
+//                     />
+//             </View>
+//             {/* Trip next */}
+//             <View className="bg-white px-8">
+//                 <Text className="font-bold text-xl text-typography-950">{headers.title}</Text>
+//                 <View className="flex-row mt-1">
+//                     <Text className="text-xs text-typography-950">{headers.numMembers} members</Text>
+//                     <Text className="text-xs text-typography-950 px-2">{headers.numExpenses} expenses</Text>
+//                 </View>
+//             </View>
+//         </View>
+//     );
     
-    return (
-        <SafeAreaView className="bg-white h-full flex-1">
-            <Animated.View style={{ opacity: fadeAnim }}>
-                {renderHeader()}
-            </Animated.View>
-            {renderTabBar()}
-            <TabView
-                navigationState={{ index, routes }}
-                renderScene={renderScene}
-                onIndexChange={setIndex}
-                initialLayout={{ width: layout.width }}
-                renderTabBar={() => null}
-            />
-        </SafeAreaView>
-    );
+//     return (
+//         <SafeAreaView className="bg-white h-full flex-1">
+//             <Animated.View style={{ opacity: fadeAnim }}>
+//                 {renderHeader()}
+//             </Animated.View>
+//             {renderTabBar()}
+//             <TabView
+//                 navigationState={{ index, routes }}
+//                 renderScene={renderScene}
+//                 onIndexChange={setIndex}
+//                 initialLayout={{ width: layout.width }}
+//                 renderTabBar={() => null}
+//             />
+//         </SafeAreaView>
+//     );
+// }
+export default function Test(){
+    return <SchemaView/>
 }

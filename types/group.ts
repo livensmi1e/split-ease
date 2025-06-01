@@ -8,3 +8,17 @@ export type GroupItemProps = {
     isCompleted: boolean;
     avatar: any;
 };
+
+export type GroupUpdate = {
+    id: string;
+    name: string;
+    currency: string;
+}
+
+export interface Participant {
+  id: number;
+  name: string;
+}
+
+
+export type RowData = Record<string, any>;
