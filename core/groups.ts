@@ -63,9 +63,6 @@ export async function deleteGroup(id: number){
     }
 }
 
-
-
-
 export async function updateGroup(obj: GroupUpdate){
     try{
         let db: SQLite.SQLiteDatabase = await getDb();

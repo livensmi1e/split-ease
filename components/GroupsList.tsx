@@ -11,9 +11,11 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+
 } from "react-native";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
+import {useRouter} from "expo-router"
 
 function GroupItem({ group }: { group: GroupItemProps }) {
     const [menuVisible, setMenuVisible] = useState(false);
@@ -132,6 +134,7 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
     const [isSearching, setIsSearching] = useState(false);
     const [searchText, setSearchText] = useState("");
     const tabBarHeight = useBottomTabBarHeight();
+    const router = useRouter();
     const renderHeader = () => (
         <View
             className={`flex-row items-center mb-6 h-14 ${
@@ -161,7 +164,9 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
                     <Feather name="search" size={24} color="#1D63ED" />
                 </TouchableOpacity>
             )}
-            <TouchableOpacity className="bg-primary-600 p-3 flex-row items-center gap-2 rounded-xl h-14">
+            <TouchableOpacity className="bg-primary-600 p-3 flex-row items-center gap-2 rounded-xl h-14" 
+            onPress={()=> router.push('/groups/create')
+            }>
                 <Feather name="plus" color="#fff" size={20}></Feather>
                 <Text className="text-white text-md">Add Group</Text>
             </TouchableOpacity>
