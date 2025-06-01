@@ -1,6 +1,5 @@
 import { MemberBalanceProps } from "@/types/balance";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import React from "react";
 import { FlatList, Text, TouchableOpacity, View } from "react-native";
 
@@ -74,7 +73,6 @@ export default function MemberBalancesList({
 }: {
     members: MemberBalanceProps[];
 }) {
-    const tabBarHeight = useBottomTabBarHeight();
     return (
         <View>
             <FlatList
@@ -85,7 +83,7 @@ export default function MemberBalancesList({
                 )}
                 showsVerticalScrollIndicator={false}
                 scrollEnabled={false}
-                contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
+                contentContainerStyle={{ paddingBottom: 16 }}
             ></FlatList>
         </View>
     );

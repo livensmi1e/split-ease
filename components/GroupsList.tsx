@@ -18,6 +18,7 @@ import { VStack } from "./ui/vstack";
 
 function GroupItem({ group }: { group: GroupItemProps }) {
     const [menuVisible, setMenuVisible] = useState(false);
+    const router = useRouter();
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
     };
@@ -31,8 +32,11 @@ function GroupItem({ group }: { group: GroupItemProps }) {
         // TODO: Confirm delete
         console.log("Remove group:", group.id);
     };
+    const handleViewDetail = () => {
+        router.push(`/groups/${group.id}`);
+    };
     return (
-        <TouchableOpacity className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl mb-4">
+        <TouchableOpacity className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl mb-4" onPress={handleViewDetail}>
             <View className="flex-row justify-between items-start mb-4">
                 <View className="flex justify-center items-center bg-primary-0 p-2 px-8 rounded-sm rounded-tl-xl">
                     <Text className="font-semibold text-primary-800">
