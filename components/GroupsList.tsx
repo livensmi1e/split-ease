@@ -3,6 +3,7 @@ import { Feather } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
     FlatList,
@@ -11,11 +12,9 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-
 } from "react-native";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
-import {useRouter} from "expo-router"
 
 function GroupItem({ group }: { group: GroupItemProps }) {
     const [menuVisible, setMenuVisible] = useState(false);

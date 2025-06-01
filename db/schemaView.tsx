@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { SQLiteDatabase } from 'expo-sqlite';
-import { dropAllTables, getDb, initDatabase } from './initdb';
-import {createGroup, getAllGroup} from '@/core/groups';
 import { RowData } from '@/types/group';
-import { createExpense } from '@/core/expenses';
+import { SQLiteDatabase } from 'expo-sqlite';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { dropAllTables, getDb } from './initdb';
 interface Table {
   name: string;
 }
@@ -63,9 +61,9 @@ function SchemaView() {
     try {
     // await createGroup("passiondev", "USD");
     // const result = await createExpense("Food", 1000, 2);
-    const reuslt = await getAllGroup();
-    // dropAllTables(db);
-    console.log(reuslt);
+    // const reuslt = await getAllGroup();
+    dropAllTables(db);
+    // console.log(reuslt);
     // console.log(result);
     Alert.alert('Đã thêm dữ liệu mẫu');
 

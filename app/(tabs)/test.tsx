@@ -3,10 +3,7 @@ import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
 import SchemaView from "@/db/schemaView";
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Pressable, Text, useWindowDimensions, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TabView } from "react-native-tab-view";
+import { Text, View } from "react-native";
 
 const balances = [
     {
@@ -45,6 +42,14 @@ const members = [
         memberName: "Member 3",
     },
 ];
+
+const headers = {
+    image: require("@/assets/images/trip-placeholder.png"),
+    title: "Da Lat Trip",
+    numMembers: 3,
+    numExpenses: 4
+}
+
 
 const ExpensesRoute = () => (
     <View className="flex-1 bg-white p-4">
@@ -98,6 +103,9 @@ const routes = [
 // export default function Test() {
 //     const layout = useWindowDimensions();
 //     const [index, setIndex] = useState(0);
+//     const router = useRouter();
+//     const fadeAnim = useRef(new Animated.Value(1)).current;
+//     const scaleAnim = useRef(new Animated.Value(1)).current;
 //     const renderScene = ({ route }: { route: { key: string } }) => {
 //         switch (route.key) {
 //             case "expenses":
@@ -135,8 +143,72 @@ const routes = [
 //         </View>
 //     );
 
+//     const fadeAndNavigate = (action: any) => {
+//         Animated.timing(fadeAnim, {
+//             toValue: 0,
+//             duration: 200,
+//             easing: Easing.in(Easing.ease),
+//             useNativeDriver: true,
+//         }).start(() => {
+//             action();
+//             fadeAnim.setValue(1);
+//         });
+//     };
+
+//     const backAction = () => {
+//         fadeAndNavigate(() => router.back());
+//         return true;
+//       };
+      
+//     const handleSettingRoute = () => {
+//         fadeAndNavigate(() => router.push("/(tabs)/settings"));
+//     };
+
+//     useEffect(() => {
+//         const backHandler = BackHandler.addEventListener(
+//             'hardwareBackPress',
+//             backAction,
+//         );
+//         return () => backHandler.remove();
+//     }, []);
+
+//     const renderHeader = () => (
+//         <View className="mb-2">
+//             <View className="flex-row items-top pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
+//                 <Pressable onPress={backAction}>
+//                     <Ionicons name="arrow-back" size={24} color="#000000"/>
+//                 </Pressable>
+//                 <Ionicons name="ellipsis-horizontal" size={24} color="#000000"/>
+//             </View>
+//             {/* Trip info */}
+//             <View className="px-8 -mt-10">
+//                 <Image 
+//                         source={headers.image} 
+//                         style={{ 
+//                             width: 80, 
+//                             height: 80, 
+//                             borderRadius: 8, 
+//                             borderWidth: 2, 
+//                             borderColor: "white",
+//                         }}
+//                     />
+//             </View>
+//             {/* Trip next */}
+//             <View className="bg-white px-8">
+//                 <Text className="font-bold text-xl text-typography-950">{headers.title}</Text>
+//                 <View className="flex-row mt-1">
+//                     <Text className="text-xs text-typography-950">{headers.numMembers} members</Text>
+//                     <Text className="text-xs text-typography-950 px-2">{headers.numExpenses} expenses</Text>
+//                 </View>
+//             </View>
+//         </View>
+//     );
+    
 //     return (
 //         <SafeAreaView className="bg-white h-full flex-1">
+//             <Animated.View style={{ opacity: fadeAnim }}>
+//                 {renderHeader()}
+//             </Animated.View>
 //             {renderTabBar()}
 //             <TabView
 //                 navigationState={{ index, routes }}

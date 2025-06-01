@@ -19,7 +19,6 @@ export default function RootLayout() {
                 />
                 <Stack.Screen name="onboard" />
                 <Stack.Screen name="(tabs)" />
-                <Stack.Screen name="groups"/>
             </Stack>
         </GluestackUIProvider>
     );
