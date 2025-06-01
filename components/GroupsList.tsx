@@ -4,8 +4,9 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+    Alert,
     FlatList,
     Image,
     Text,
@@ -15,25 +16,47 @@ import {
 } from "react-native";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
+import { deleteGroup } from "@/core/groups";
 
-function GroupItem({ group }: { group: GroupItemProps }) {
+function GroupItem({ group, onDelete }: { group: GroupItemProps, onDelete?: (id: number) => void; }) {
     const [menuVisible, setMenuVisible] = useState(false);
     const router = useRouter();
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
     };
+    const [needreRender, setNeedreRender] = useState(false)
     const handleEdit = () => {
         setMenuVisible(false);
         // TODO: Navigate or open edit modal
-        console.log("Edit group:", group.id);
+        router.push({
+        pathname: '/groups/update',
+        params: { id:  group.id},})
     };
     const handleDelete = () => {
         setMenuVisible(false);
         // TODO: Confirm delete
+        Alert.alert("Xóa nhóm","Bạn có thực sự muốn xóa nhóm này?",
+            [
+                {
+                text: "Huỷ",
+                onPress: () => console.log("Đã huỷ"),
+                style: "cancel",
+                },
+                {
+                text: "OK",
+                onPress: () => {deleteGroup(group.id);onDelete?.(group.id);},
+                },
+            ],
+            { cancelable: true }
+        )
         console.log("Remove group:", group.id);
     };
     const handleViewDetail = () => {
-        router.push(`/groups/${group.id}`);
+        router.push({
+        pathname: '/groups/[id]',
+        params: { id: group.id },
+});
+
     };
     return (
         <TouchableOpacity className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl mb-4" onPress={handleViewDetail}>
@@ -137,6 +160,15 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
     const [isSearching, setIsSearching] = useState(false);
     const [searchText, setSearchText] = useState("");
     const tabBarHeight = useBottomTabBarHeight();
+    const [groupList, setGroupList] = useState(groups);
+    useEffect(() => {
+        setGroupList(groups);
+    }, [groups]);
+
+    const handleGroupDeleted = (id: number) => {
+        setGroupList((prev) => prev.filter((g) => g.id !== id));
+    };
+
     const router = useRouter();
     const renderHeader = () => (
         <View
@@ -178,9 +210,9 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
     return (
         <View>
             <FlatList
-                data={groups}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <GroupItem group={item}></GroupItem>}
+                data={groupList}
+                keyExtractor={(item) => item.id.toString()}
+                renderItem={({ item }) => <GroupItem onDelete={handleGroupDeleted} group={item}></GroupItem>}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={renderHeader}
                 contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}

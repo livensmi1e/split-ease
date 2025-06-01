@@ -1,5 +1,5 @@
 import { getDb } from '@/db/initdb'
-import { GroupUpdate, RowData } from '@/types/group';
+import { GroupItemProps, GroupUpdate, RowData } from '@/types/group';
 import * as SQLite from 'expo-sqlite'
 
 
@@ -21,7 +21,7 @@ export async function getAllGroup(){
         let db: SQLite.SQLiteDatabase = await getDb();
         const result: RowData[] = await db.getAllAsync(
         `SELECT 
-            g.id AS group_id,
+            g.id AS id,
             g.name,
             g.currency,
             COUNT(DISTINCT m.id) AS memberCount,
@@ -40,7 +40,7 @@ export async function getAllGroup(){
     }
 }
 
-export async function getGroup(id: number){
+export async function getGroup(id: string){
     try{
         let db: SQLite.SQLiteDatabase = await getDb();
         const result: RowData[]= await db.getAllAsync('SELECT * FROM group_table WHERE id=?', [id])
@@ -69,9 +69,14 @@ export async function updateGroup(obj: GroupUpdate){
         let query = "UPDATE group_table SET "
         const param = []
         for(const [key, value] of Object.entries(obj)){
-            query += `${key} = ?`
-            param.push(value)
+            if (key!="id"){
+                query += ` ${key} = ?,`
+                param.push(value)}
         }
+        query = query.slice(0,-1)
+        query+= " WHERE id = ?"
+        // console.log(query)
+        if(obj.id) param.push(obj.id)
         await db.runAsync(query, param)
     }
     catch(error){

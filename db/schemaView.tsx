@@ -3,11 +3,10 @@ import { SQLiteDatabase } from 'expo-sqlite';
 import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { dropAllTables, getDb } from './initdb';
+
 interface Table {
   name: string;
 }
-
-
 
 function SchemaView() {
   const [db, setDb] = useState<SQLiteDatabase | null>(null);
@@ -59,34 +58,53 @@ function SchemaView() {
     if (!db) return;
 
     try {
-    // await createGroup("passiondev", "USD");
-    // const result = await createExpense("Food", 1000, 2);
-    // const reuslt = await getAllGroup();
-    dropAllTables(db);
-    // console.log(reuslt);
-    // console.log(result);
-    Alert.alert('Đã thêm dữ liệu mẫu');
+      await dropAllTables(db); // Hoặc thêm dữ liệu mẫu tuỳ ý
+      Alert.alert('Đã thêm dữ liệu mẫu');
 
+      const newTableData: Record<string, RowData[]> = {};
+
+      for (const table of tables) {
+        try {
+          const rows: RowData[] = await db.getAllAsync(`SELECT * FROM ${table.name}`);
+          newTableData[table.name] = rows;
+        } catch (err) {
+          console.error(`Lỗi khi load lại bảng ${table.name}:`, err);
+          newTableData[table.name] = [{ error: 'Query failed' }];
+        }
+      }
+      setTableData(newTableData);
+    } catch (err) {
+      console.error('Lỗi khi thêm dữ liệu mẫu:', err);
+      Alert.alert('Thất bại khi thêm dữ liệu');
+    }
+  };
+
+  const handleReloadDatabase = async () => {
     if (!db) return;
 
-    const newTableData: Record<string, RowData[]> = {};
+    try {
+      const tableList: Table[] = await db.getAllAsync(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+      );
+      setTables(tableList);
 
-    for (const table of tables) {
-      try {
-        const rows: RowData[] = await db.getAllAsync(`SELECT * FROM ${table.name}`);
-        newTableData[table.name] = rows;
-      } catch (err) {
-        console.error(`Lỗi khi load lại bảng ${table.name}:`, err);
-        newTableData[table.name] = [{ error: 'Query failed' }];
+      const newTableData: Record<string, RowData[]> = {};
+      for (const table of tableList) {
+        try {
+          const rows: RowData[] = await db.getAllAsync(`SELECT * FROM ${table.name}`);
+          newTableData[table.name] = rows;
+        } catch (err) {
+          console.error(`Lỗi khi load lại bảng ${table.name}:`, err);
+          newTableData[table.name] = [{ error: 'Query failed' }];
+        }
       }
+
+      setTableData(newTableData);
+      Alert.alert('Reload thành công!');
+    } catch (err) {
+      console.error('Lỗi reload:', err);
+      Alert.alert('Không thể reload database');
     }
-    setTableData(newTableData);
-
-  } catch (err) {
-    console.error(' Lỗi thêm dữ liệu mẫu:', err);
-    Alert.alert('Thất bại khi thêm dữ liệu');
-  }
-
   };
 
   return (
@@ -133,23 +151,43 @@ function SchemaView() {
             </View>
           ))
         )}
-        <TouchableOpacity
-        onPress={handleCustomAction}
+        <View
         style={{
           position: 'absolute',
           bottom: 20,
           alignSelf: 'center',
-          backgroundColor: '#007AFF',
-          paddingHorizontal: 20,
-          paddingVertical: 10,
-          borderRadius: 8,
+          flexDirection: 'row',
+          gap: 12,
           zIndex: 1000,
         }}
       >
-        <Text style={{ color: '#fff', fontWeight: 'bold' }}>Thêm dữ liệu mẫu</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleCustomAction}
+          style={{
+            backgroundColor: '#007AFF',
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>Thêm dữ liệu mẫu</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={handleReloadDatabase}
+          style={{
+            backgroundColor: '#34C759',
+            paddingHorizontal: 16,
+            paddingVertical: 10,
+            borderRadius: 8,
+          }}
+        >
+          <Text style={{ color: '#fff', fontWeight: 'bold' }}>Reload Database</Text>
+        </TouchableOpacity>
+      </View>
       </ScrollView>
 
+      {/* Nút hành động bên dưới */}
       
     </View>
   );

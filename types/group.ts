@@ -1,5 +1,5 @@
 export type GroupItemProps = {
-    id: string;
+    id: number;
     name: string;
     activityCount: number;
     memberCount: number;
@@ -10,9 +10,9 @@ export type GroupItemProps = {
 };
 
 export type GroupUpdate = {
-    id: string;
-    name: string;
-    currency: string;
+    id?: string;
+    name?: string;
+    currency?: string;
 }
 
 export interface Participant {

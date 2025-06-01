@@ -155,6 +155,10 @@ export default function GroupDetail() {
     return true;
   };
 
+  const updateAction = ()=> router.push({
+        pathname: '/groups/update',
+        params: { id:  Array.isArray(id) ? id[0] : id ?? "" },})
+
   useEffect(() => {
     const backHandler = BackHandler.addEventListener(
       "hardwareBackPress",
@@ -169,7 +173,9 @@ export default function GroupDetail() {
         <Pressable onPress={backAction}>
           <Ionicons name="arrow-back" size={24} color="#000000" />
         </Pressable>
-        <Ionicons name="ellipsis-horizontal" size={24} color="#000000" />
+        <Pressable onPress={updateAction}>
+          <Ionicons name="ellipsis-horizontal" size={24} color="#000000" />
+        </Pressable>
       </View>
       <View className="px-8 -mt-10">
         <Image

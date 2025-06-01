@@ -10,32 +10,42 @@ import {
 } from "react-native";
 
 interface ParticipantListProps {
-  onChange: React.Dispatch<React.SetStateAction<Participant[]>>;
+  onChange: (participants: Participant[]) => void;
+  initialData?: Participant[];
 }
 
-export default function ParticipantList({ onChange }: ParticipantListProps) {
-    const [participants, setParticipants] = useState([
-    { id: Date.now(), name: "" },
+export default function ParticipantList({
+  onChange,
+  initialData = [],
+}: ParticipantListProps) {
+  const [participants, setParticipants] = useState<Participant[]>(() => {
+    return initialData.length > 0
+      ? initialData
+      : [{ id: Date.now(), name: "" }];
+  });
+
+  useEffect(() => {
+    onChange(participants);
+  }, [participants]);
+
+  const handleAdd = () => {
+    setParticipants((prev) => [
+      ...prev,
+      { id: Date.now(), name: "" },
     ]);
+  };
 
-    useEffect(() => {
-        onChange(participants);
-    }, [participants]);
-    const handleAdd = () => {
-    setParticipants((prev) => [...prev, { id: Date.now(), name: "" }]);
-    };
+  const handleRemove = (id: number) => {
+    setParticipants((prev) => prev.filter((p) => p.id !== id));
+  };
 
-    const handleRemove = (id: number) => {
-    setParticipants((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    const handleChangeText = (id: number, newName: string) => {
+  const handleChangeText = (id: number, name: string) => {
     setParticipants((prev) =>
-        prev.map((item) => (item.id === id ? { ...item, name: newName } : item))
+      prev.map((p) => (p.id === id ? { ...p, name } : p))
     );
-    };
+  };
 
-    return (
+  return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
         {participants.map((item) => (
@@ -70,7 +80,7 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#f9fafb",
     borderRadius: 10,
-    maxHeight: 400, // tránh ScrollView bị vô hạn
+    maxHeight: 400,
   },
   row: {
     flexDirection: "row",
