@@ -1,8 +1,30 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
-import React from "react";
+import { router } from "expo-router";
+import React, { useEffect } from "react";
 import { Image, SafeAreaView } from "react-native";
 
 export default function SplashScreen() {
+    useEffect(() => {
+        checkOnboarding();
+    }, []);
+    const checkOnboarding = async () => {
+        try {
+            const hasSeenOnboarding = await AsyncStorage.getItem(
+                "hasSeenOnboarding"
+            );
+            setTimeout(async () => {
+                if (hasSeenOnboarding === "true") {
+                    router.replace("/(tabs)");
+                } else {
+                    router.replace("/onboard");
+                }
+            }, 4000);
+        } catch (error) {
+            console.error("Error checking onboarding status:", error);
+            router.replace("/onboard");
+        }
+    };
     return (
         <LinearGradient
             colors={["#FFFFFF", "#1D63ED"]}
