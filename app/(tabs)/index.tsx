@@ -54,7 +54,7 @@ export default function Home() {
     ];
     const pendingGroups: GroupItemProps[] = [
         {
-            id: "1",
+            id: 1,
             name: "Da Lat Trip",
             activityCount: 5,
             memberCount: 3,
@@ -64,7 +64,7 @@ export default function Home() {
             avatar: require("@/assets/images/avatar.png"),
         },
         {
-            id: "2",
+            id: 2,
             name: "Da Lat Trip",
             activityCount: 5,
             memberCount: 3,
@@ -74,7 +74,7 @@ export default function Home() {
             avatar: require("@/assets/images/avatar.png"),
         },
         {
-            id: "3",
+            id: 3,
             name: "Da Lat Trip",
             activityCount: 5,
             memberCount: 3,
