@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import React, { useEffect } from "react";
-import { Image, SafeAreaView } from "react-native";
+import { Image, SafeAreaView, StatusBar } from "react-native";
 
 export default function SplashScreen() {
     useEffect(() => {
@@ -32,6 +32,11 @@ export default function SplashScreen() {
             end={{ x: 1, y: 1 }}
             className="flex-1 justify-center items-center"
         >
+            <StatusBar
+                translucent={true}
+                backgroundColor="transparent"
+                barStyle="dark-content"
+            />
             <SafeAreaView className="flex-1 justify-center items-center">
                 <Image
                     source={require("../assets/images/split-ease-logo.png")}
