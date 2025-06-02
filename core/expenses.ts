@@ -19,7 +19,7 @@ export async function createExpense(
     }
 }
 
-export async function getExense(db: SQLite.SQLiteDatabase, id: number) {
+export async function getExpense(db: SQLite.SQLiteDatabase, id: number) {
     try {
         const result: RowData = await db.getAllAsync(
             "SELECT * FROM expense WHERE id = ?",
@@ -31,3 +31,22 @@ export async function getExense(db: SQLite.SQLiteDatabase, id: number) {
         return false;
     }
 }
+
+export async function updateExpense(
+    db: SQLite.SQLiteDatabase,
+    id: number,
+    description: string,
+    amount: number
+) {
+    try {
+        await db.runAsync(
+            "UPDATE expense SET description = ?, amount = ? WHERE id = ?",
+            [description, amount, id]
+        );
+        return true;
+    } catch (error) {
+        console.error("Fail to update expense: ", error);
+        return false;
+    }
+}
+

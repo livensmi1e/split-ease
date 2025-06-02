@@ -1,5 +1,8 @@
+import { getExpense } from "@/core/expenses";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useState } from "react";
 import {
     Pressable,
     SectionList,
@@ -7,28 +10,42 @@ import {
     TouchableOpacity,
     View,
 } from "react-native";
+// const DATA = [
+//     {
+//         title: "Today",
+//         data: [
+//             { id: "1", category: "Food", payer: "Member 1", amount: "$10" },
+//             { id: "2", category: "Food", payer: "Member 1", amount: "$10" },
+//         ],
+//     },
+//     {
+//         title: "12 Jan, 2025",
+//         data: [
+//             { id: "3", category: "Food", payer: "Member 1", amount: "$10" },
+//             { id: "4", category: "Food", payer: "Member 1", amount: "$10" },
+//         ],
+//     },
+// ];
+type Expense = {
+    id: string;
+    description: string;
+    payer: string;
+    amount: number;
+};
 
-const DATA = [
-    {
-        title: "Today",
-        data: [
-            { id: "1", category: "Food", payer: "Member 1", amount: "$10" },
-            { id: "2", category: "Food", payer: "Member 1", amount: "$10" },
-        ],
-    },
-    {
-        title: "12 Jan, 2025",
-        data: [
-            { id: "3", category: "Food", payer: "Member 1", amount: "$10" },
-            { id: "4", category: "Food", payer: "Member 1", amount: "$10" },
-        ],
-    },
-];
+type Section = {
+    title: string;
+    data: Expense[];
+};
 
-function ExpenseItem({ item }: { item: (typeof DATA)[0]["data"][0] }) {
+// function ExpenseItem({ item }: { item: (typeof DATA)[0]["data"][0] }) {
+function ExpenseItem({ item }: { item: Expense }) {
     const router = useRouter();
     const handlePress = () => {
-        router.push(`/expenses/update?id=${item.id}`);
+        router.push({
+            pathname: "/expenses/update",
+            params: { id: item.id }
+        });
     };
     return (
         <Pressable className="flex-row bg-background-50 rounded-xl mb-4 items-stretch pr-4" onPress={handlePress}>
@@ -41,10 +58,12 @@ function ExpenseItem({ item }: { item: (typeof DATA)[0]["data"][0] }) {
             </View>
             <View className="flex-1 p-2 shadow-sm">
                 <Text className="text-md font-semibold mb-1">
-                    {item.category}
+                    {/* {item.category} */}
+                    {item.description}
                 </Text>
                 <Text className="text-sm text-typography-900">
                     Paid by <Text className="font-bold">{item.payer}</Text>
+                    
                 </Text>
             </View>
             <View className="flex-row items-center gap-2">
@@ -64,10 +83,51 @@ function ExpenseItem({ item }: { item: (typeof DATA)[0]["data"][0] }) {
 }
 
 export default function ExpensesList() {
+    const { id } = useLocalSearchParams();
+    const db = useSQLiteContext();
+    const [sections, setSections] = useState<Section[]>([]);
+
+    useEffect(() => {
+        const loadExpenses = async () => {
+            try {
+                const expenses = await getExpense(db, parseInt(id as string));
+                if (expenses && Array.isArray(expenses)) {
+                    // Group expenses by date
+                    const groupedExpenses = expenses.reduce((acc: { [key: string]: Expense[] }, expense) => {
+                        const date = new Date(expense.created_at as string).toLocaleDateString();
+                        if (!acc[date]) {
+                            acc[date] = [];
+                        }
+                        acc[date].push({
+                            id: expense.id.toString(),
+                            description: expense.description as string,
+                            payer: expense.payer as string,
+                            amount: expense.amount as number,
+                        });
+                        return acc;
+                    }, {});
+
+                    // Convert to sections format
+                    const sectionsData = Object.entries(groupedExpenses).map(([date, expenses]) => ({
+                        title: date,
+                        data: expenses
+                    }));
+
+                    setSections(sectionsData);
+                }
+            } catch (error) {
+                console.error("Failed to load expenses:", error);
+            }
+        };
+
+        loadExpenses();
+    }, [id]);
+
     return (
         <View className="flex-1">
             <SectionList
-                sections={DATA}
+                // sections={DATA}
+                sections={sections}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => <ExpenseItem item={item} />}
                 renderSectionHeader={({ section: { title } }) => (
