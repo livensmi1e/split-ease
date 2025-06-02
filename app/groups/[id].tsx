@@ -212,7 +212,10 @@ export default function GroupDetail() {
     );
 
     const addExpense = () => {
-        router.push(`/expenses/create`);
+        router.push({
+            pathname: "/expenses/create",
+            params: { groupId: Array.isArray(id) ? id[0] : id ?? "" }
+        });
     };
 
     return (

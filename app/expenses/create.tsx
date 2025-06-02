@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useState } from "react";
 import {
     Image,
     SafeAreaView,
@@ -10,9 +11,35 @@ import {
     View,
 } from "react-native";
 
+import { createExpense } from "@/core/expenses";
+import { useSQLiteContext } from "expo-sqlite";
+
 export default function CreateExpense() {
     const router = useRouter();
+    const { groupId } = useLocalSearchParams();
+    const db = useSQLiteContext();
+    const [description, setDescription] = useState("");
+    const [amount, setAmount] = useState("");
 
+    const handleCreateExpense = async () => {
+        // if (!description || !amount || !groupId) return;
+        try {
+            console.log("tao o day");
+            
+            const success = await createExpense(
+                db,
+                description,
+                parseFloat(amount),
+                parseInt(groupId as string)
+            );
+            
+            if (success) {
+                router.back();
+            }
+        } catch (error) {
+            console.error("Failed to create expense:", error);
+        }
+    };
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView
@@ -27,7 +54,7 @@ export default function CreateExpense() {
                     <Text className="text-xl font-bold">
                         Create new expense
                     </Text>
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity onPress={handleCreateExpense}>
                         <Ionicons name="checkmark" size={28} />
                     </TouchableOpacity>
                 </View>
@@ -42,6 +69,8 @@ export default function CreateExpense() {
                     </View>
                     <TextInput
                         placeholder="The hotel"
+                        value={description}
+                        onChangeText={setDescription}
                         className="flex-1 border-b border-gray-300 text-md pb-1 text-typography-600"
                     />
                 </View>
@@ -64,6 +93,9 @@ export default function CreateExpense() {
                 <Text className="text-md text-typography-800 mb-3">Amount</Text>
                 <TextInput
                     placeholder="0.00"
+                    value={amount}
+                    onChangeText={setAmount}
+
                     keyboardType="numeric"
                     className="border border-gray-300 rounded-md px-4 py-3 text-md mb-6"
                 />
