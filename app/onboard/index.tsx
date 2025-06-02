@@ -1,4 +1,5 @@
 import { OnboardingItem } from "@/types/onboard";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useRef, useState } from "react";
@@ -25,18 +26,20 @@ export default function OnboardScreen() {
         }
     ).current;
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (currentIndex < ONBOARDING_DATA.length - 1) {
             flatListRef.current?.scrollToIndex({
                 index: currentIndex + 1,
                 animated: true,
             });
         } else {
+            await AsyncStorage.setItem("hasSeenOnboarding", "true");
             router.replace("/(tabs)");
         }
     };
 
-    const handleSkip = () => {
+    const handleSkip = async () => {
+        await AsyncStorage.setItem("hasSeenOnboarding", "true");
         router.replace("/(tabs)");
     };
 
@@ -45,10 +48,10 @@ export default function OnboardScreen() {
             <Image
                 source={item.image}
                 resizeMode="contain"
-                className="h-96 w-full mb-10"
+                className="h-96 w-full mb-5"
             ></Image>
-            <View className="w-full px-4">
-                <Text className="text-3xl font-bold mb-[10px] text-center text-typography-900">
+            <View className="w-full px-4 pt-0">
+                <Text className="text-2xl font-bold mb-[10px] text-center text-typography-900">
                     {item.heading}
                 </Text>
                 <Text className="text-sm text-center text-typography-700 font-medium">
@@ -84,7 +87,7 @@ export default function OnboardScreen() {
                 />
             </View>
 
-            <View className="px-6 mb-[90px] w-full">
+            <View className="px-6 mb-[60px] w-full">
                 <View className="flex-row justify-center gap-2 mb-[60px]">
                     {ONBOARDING_DATA.map((_, index) => (
                         <View
