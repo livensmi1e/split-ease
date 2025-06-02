@@ -1,4 +1,5 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import {
     Pressable,
     SectionList,
@@ -25,8 +26,12 @@ const DATA = [
 ];
 
 function ExpenseItem({ item }: { item: (typeof DATA)[0]["data"][0] }) {
+    const router = useRouter();
+    const handlePress = () => {
+        router.push(`/expenses/update?id=${item.id}`);
+    };
     return (
-        <Pressable className="flex-row bg-background-50 rounded-xl mb-4 items-stretch pr-4">
+        <Pressable className="flex-row bg-background-50 rounded-xl mb-4 items-stretch pr-4" onPress={handlePress}>
             <View className="w-16 bg-blue-600 rounded-l-xl items-center justify-center mr-3">
                 <FontAwesome5
                     name="receipt"

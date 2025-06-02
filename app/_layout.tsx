@@ -7,7 +7,19 @@ import { StatusBar } from "react-native";
 
 export default function RootLayout() {
     return (
-        <SQLiteProvider databaseName="mydb.db" onInit={initDatabase}>
+        <SQLiteProvider 
+            databaseName="mydb.db" 
+            onInit={async (db) => {
+                try {
+                    console.log("Initializing database...");
+                    await initDatabase(db);
+                    console.log("Database initialized successfully");
+                } catch (error) {
+                    console.error("Failed to initialize database:", error);
+                    // You might want to show an error message to the user here
+                }
+            }}
+        >
             <GluestackUIProvider mode="light">
                 <StatusBar
                     barStyle="dark-content"

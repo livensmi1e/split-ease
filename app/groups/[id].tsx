@@ -1,3 +1,4 @@
+import AddExpenseButton from "@/components/AddExpenseButton";
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
@@ -16,7 +17,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabView } from "react-native-tab-view";
-
 // Fake data function for now
 const getGroupDataById = (id: string | string[] | undefined) => {
     return {
@@ -211,6 +211,10 @@ export default function GroupDetail() {
         </View>
     );
 
+    const addExpense = () => {
+        router.push(`/expenses/create`);
+    };
+
     return (
         <SafeAreaView className="bg-white h-full flex-1">
             <Animated.View style={{ opacity: fadeAnim }}>
@@ -224,6 +228,10 @@ export default function GroupDetail() {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={() => null}
             />
+            <View className="absolute bottom-16 right-8">
+                <AddExpenseButton onPress={addExpense} />
+            </View>
         </SafeAreaView>
     );
 }
+
