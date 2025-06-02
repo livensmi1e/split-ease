@@ -36,7 +36,7 @@ export const initDatabase = async () => {
         group_id INTEGER,
         expense_id INTEGER,
         PRIMARY KEY(member_id, group_id, expense_id),
-        FOREIGN KEY (member_id, group_id) REFERENCES member(id, group_id),
+        FOREIGN KEY (member_id) REFERENCES member(id),
         FOREIGN KEY (group_id) REFERENCES group_table(id) ON DELETE CASCADE,
         FOREIGN KEY (expense_id) REFERENCES expense(id)
       );
