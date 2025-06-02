@@ -1,9 +1,11 @@
+import { deleteGroup } from "@/core/groups";
 import { GroupItemProps } from "@/types/group";
 import { Feather } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
 import React, { useEffect, useState } from "react";
 import {
     Alert,
@@ -16,50 +18,64 @@ import {
 } from "react-native";
 import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
-import { deleteGroup } from "@/core/groups";
 
-function GroupItem({ group, onDelete }: { group: GroupItemProps, onDelete?: (id: number) => void; }) {
+function GroupItem({
+    group,
+    onDelete,
+}: {
+    group: GroupItemProps;
+    onDelete?: (id: number) => void;
+}) {
+    const db = useSQLiteContext();
     const [menuVisible, setMenuVisible] = useState(false);
     const router = useRouter();
     const toggleMenu = () => {
         setMenuVisible(!menuVisible);
     };
-    const [needreRender, setNeedreRender] = useState(false)
+    const [needreRender, setNeedreRender] = useState(false);
     const handleEdit = () => {
         setMenuVisible(false);
         // TODO: Navigate or open edit modal
         router.push({
-        pathname: '/groups/update',
-        params: { id:  group.id},})
+            pathname: "/groups/update",
+            params: { id: group.id },
+        });
     };
     const handleDelete = () => {
         setMenuVisible(false);
         // TODO: Confirm delete
-        Alert.alert("Xóa nhóm","Bạn có thực sự muốn xóa nhóm này?",
+        Alert.alert(
+            "Xóa nhóm",
+            "Bạn có thực sự muốn xóa nhóm này?",
             [
                 {
-                text: "Huỷ",
-                onPress: () => console.log("Đã huỷ"),
-                style: "cancel",
+                    text: "Huỷ",
+                    onPress: () => console.log("Đã huỷ"),
+                    style: "cancel",
                 },
                 {
-                text: "OK",
-                onPress: () => {deleteGroup(group.id);onDelete?.(group.id);},
+                    text: "OK",
+                    onPress: () => {
+                        deleteGroup(db, group.id);
+                        onDelete?.(group.id);
+                    },
                 },
             ],
             { cancelable: true }
-        )
+        );
         console.log("Remove group:", group.id);
     };
     const handleViewDetail = () => {
         router.push({
-        pathname: '/groups/[id]',
-        params: { id: group.id },
-});
-
+            pathname: "/groups/[id]",
+            params: { id: group.id },
+        });
     };
     return (
-        <TouchableOpacity className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl mb-4" onPress={handleViewDetail}>
+        <TouchableOpacity
+            className="p-4 bg-background-50 border-border-200 border-[1px] rounded-xl mb-4"
+            onPress={handleViewDetail}
+        >
             <View className="flex-row justify-between items-start mb-4">
                 <View className="flex justify-center items-center bg-primary-0 p-2 px-8 rounded-sm rounded-tl-xl">
                     <Text className="font-semibold text-primary-800">
@@ -199,9 +215,10 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
                     <Feather name="search" size={24} color="#1D63ED" />
                 </TouchableOpacity>
             )}
-            <TouchableOpacity className="bg-primary-600 p-3 flex-row items-center gap-2 rounded-xl h-14" 
-            onPress={()=> router.push('/groups/create')
-            }>
+            <TouchableOpacity
+                className="bg-primary-600 p-3 flex-row items-center gap-2 rounded-xl h-14"
+                onPress={() => router.push("/groups/create")}
+            >
                 <Feather name="plus" color="#fff" size={20}></Feather>
                 <Text className="text-white text-md">Add Group</Text>
             </TouchableOpacity>
@@ -212,7 +229,12 @@ export default function GroupsList({ groups }: { groups: GroupItemProps[] }) {
             <FlatList
                 data={groupList}
                 keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => <GroupItem onDelete={handleGroupDeleted} group={item}></GroupItem>}
+                renderItem={({ item }) => (
+                    <GroupItem
+                        onDelete={handleGroupDeleted}
+                        group={item}
+                    ></GroupItem>
+                )}
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={renderHeader}
                 contentContainerStyle={{ paddingBottom: tabBarHeight + 16 }}
