@@ -173,9 +173,9 @@ export default function Settings() {
                     </AccordionHeader>
                     <AccordionContent className="p-0 pt-4">
                         <AccordionContentText>
-                            To place an order, simply select the products you
-                            want, proceed to checkout, provide shipping and
-                            payment information, and finalize your purchase.
+                            We are Passion Dev Team. We want to make your group
+                            expense experience more joyful. Enjoy your time with
+                            friends, roommates without bordering about bills.
                         </AccordionContentText>
                     </AccordionContent>
                 </AccordionItem>
