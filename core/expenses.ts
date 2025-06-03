@@ -1,4 +1,3 @@
-import { dropAllTables } from "@/db/initdb";
 import { Participant, RowData } from "@/types/group";
 import * as SQLite from "expo-sqlite";
 
@@ -81,7 +80,7 @@ export async function createExpense(
       // Tùy chọn: xác thực tổng số tiền chia
       const totalShare = Object.values(shareMap).reduce((a, b) => a + b, 0);
       // Sử dụng một dung sai nhỏ cho việc so sánh số thập phân
-      if (parseFloat((Math.abs(totalShare - amount)).toFixed(2))>0.01) {
+      if (parseFloat((Math.abs(totalShare - amount)).toFixed(2)) > 0.01) {
         console.log(`totalShare: ${totalShare} amount: ${amount}`)
         throw new Error("Tổng tiền chia không khớp với tổng chi phí");
       }
@@ -170,7 +169,13 @@ export async function getMemberBalancesByGroupId(db: SQLite.SQLiteDatabase, grou
 export async function getWhoOwesWhoByGroupId(db: SQLite.SQLiteDatabase, groupId: number) {
   try {
     const owesWho: RowData[] = await db.getAllAsync(
-      `SELECT debtor_name, creditor_name, amount
+      `SELECT 
+        group_id,
+        from_member_id,
+        debtor_name,
+        to_member_id,
+        creditor_name,
+        amount
        FROM who_owes_who
        WHERE group_id = ?`,
       [groupId]
@@ -179,5 +184,24 @@ export async function getWhoOwesWhoByGroupId(db: SQLite.SQLiteDatabase, groupId:
   } catch (error) {
     console.error("Failed to get who owes who by group ID: ", error);
     return [];
+  }
+}
+
+export async function markAsPaid(
+  db: SQLite.SQLiteDatabase,
+  groupId: number,
+  fromMemberId: number,
+  toMemberId: number,
+  amount: number
+): Promise<boolean> {
+  try {
+    await db.runAsync(
+      `INSERT INTO settlement (group_id, from_member, to_member, amount) VALUES (?, ?, ?, ?)`,
+      [groupId, fromMemberId, toMemberId, amount]
+    );
+    return true;
+  } catch (error) {
+    console.error("Failed to mark as paid:", error);
+    return false;
   }
 }

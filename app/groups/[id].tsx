@@ -32,6 +32,12 @@ const ExpensesRoute = () => {
     );
 }
 
+const EmptyCard = ({ message }: { message: string }) => (
+    <View className="border border-dashed border-gray-300 p-4 rounded-lg bg-gray-50">
+        <Text className="text-center text-gray-500">{message}</Text>
+    </View>
+);
+
 const BalancesRoute = ({ group }: { group: any }) => {
     const [balances, setBalances] = useState<MemberBalanceProps[]>([]);
     const [whoOwesWho, setWhoOwesWho] = useState<MarkAsPaidProps[]>([]);
@@ -45,7 +51,6 @@ const BalancesRoute = ({ group }: { group: any }) => {
                 const memberBalances = await getMemberBalancesByGroupId(db, groupID);
                 const owesData = await getWhoOwesWhoByGroupId(db, parseInt(groupID));
 
-                // Transform member balances data
                 const transformedBalances: MemberBalanceProps[] = memberBalances.map((balance: RowData) => ({
                     id: balance.member_id.toString(),
                     memberName: balance.name,
@@ -54,13 +59,14 @@ const BalancesRoute = ({ group }: { group: any }) => {
                 }));
                 setBalances(transformedBalances);
 
-                // Transform who owes who data
                 const transformedOwesData: MarkAsPaidProps[] = owesData.map((owe: RowData, index: number) => ({
                     id: index.toString(),
                     owner: owe.creditor_name,
                     target: owe.debtor_name,
                     amount: owe.amount,
-                    isMe: false // TODO: Add logic to determine if the current user is involved
+                    isMe: false,
+                    debtorId: owe.from_member_id,
+                    creditorId: owe.to_member_id
                 }));
                 setWhoOwesWho(transformedOwesData);
             } catch (error) {
@@ -77,17 +83,26 @@ const BalancesRoute = ({ group }: { group: any }) => {
                 Pending Balances
             </Text>
             <View className="mb-6">
-                <MarkAsPaidsList balances={whoOwesWho} />
+                {whoOwesWho.length > 0 ? (
+                    <MarkAsPaidsList balances={whoOwesWho} />
+                ) : (
+                    <EmptyCard message="No pending balances found." />
+                )}
             </View>
+
             <Text className="text-typography-700 font-medium text-base mb-4">
                 See group member balances
             </Text>
             <View>
-                <MemberBalancesList members={balances} />
+                {balances.length > 0 ? (
+                    <MemberBalancesList members={balances} />
+                ) : (
+                    <EmptyCard message="No member balances available." />
+                )}
             </View>
         </View>
     );
-}
+};
 
 const PhotosRoute = () => (
     <View className="flex-1 bg-white p-6 items-center">
@@ -122,6 +137,8 @@ export default function GroupDetail() {
     useEffect(() => {
         const loadGroupData = async () => {
             try {
+                // await db.runAsync("DELETE FROM expense")
+                // await db.runAsync("Delete from settlement")
                 const res = await getGroup(db, groupID);
                 if (res) {
                     const formattedData: GroupItemProps = res.map(
@@ -140,7 +157,7 @@ export default function GroupDetail() {
                             };
                         }
                     )[0];
-                    console.log(formattedData);
+                    // console.log(formattedData);
                     setGroup(formattedData);
                 }
             }

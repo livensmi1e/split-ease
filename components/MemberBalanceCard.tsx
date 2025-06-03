@@ -2,12 +2,6 @@ import { MemberBalanceProps } from "@/types/balance";
 import React from "react";
 import { Text, View } from "react-native";
 
-const member: MemberBalanceProps = {
-    id: "1",
-    memberName: "Member 2",
-    owes: 10,
-    pays: 20,
-};
 
 export default function MemberBalanceCard({
     member,

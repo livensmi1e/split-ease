@@ -61,8 +61,7 @@ function SchemaView() {
     if (!db) return;
 
     try {
-      await dropAllTables(db);
-      Alert.alert("Đã xoá và có thể thêm lại dữ liệu!");
+      await db.runAsync("DELETE FROM expense;")
 
       const newTableData: Record<string, RowData[]> = {};
 

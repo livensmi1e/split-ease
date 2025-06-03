@@ -8,12 +8,13 @@ import { HStack } from "./ui/hstack";
 import { VStack } from "./ui/vstack";
 
 function PendingGroupItem({ group }: { group: GroupItemProps }) {
-    const windowWidth = Dimensions.get("window").width - 32;
+    const windowWidth = Dimensions.get("window").width;
     return (
         <View
             className="p-4 border-border-200 bg-background-50 rounded-lg border-[1px]"
-            style={{ width: windowWidth }}
+            style={{ width: windowWidth }} // hoặc windowWidth - 32 nhưng phải khớp với snapToInterval
         >
+
             <Text className="text-lg font-semibold mb-4">{group.name}</Text>
             <HStack className="justify-between">
                 <VStack className="flex-1" space="lg">
@@ -54,14 +55,16 @@ export default function PendingGroupsList({
     return (
         <FlatList
             data={groups}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
                 <PendingGroupItem group={item}></PendingGroupItem>
             )}
-            horizontal={true}
+            horizontal
             showsHorizontalScrollIndicator={false}
-            snapToInterval={windowWidth}
+            snapToInterval={windowWidth} // hoặc windowWidth - 32 nếu item width = windowWidth - 32
+            decelerationRate="fast"
             ItemSeparatorComponent={() => <Box className="w-4" />}
-        ></FlatList>
+        />
     );
 }
+
