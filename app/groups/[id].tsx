@@ -45,35 +45,35 @@ const BalancesRoute = ({ group }: { group: any }) => {
     const { id } = useLocalSearchParams();
     const groupID = Array.isArray(id) ? id[0] : id;
 
+    const loadBalanceData = async () => {
+        try {
+            const memberBalances = await getMemberBalancesByGroupId(db, groupID);
+            const owesData = await getWhoOwesWhoByGroupId(db, parseInt(groupID));
+
+            const transformedBalances: MemberBalanceProps[] = memberBalances.map((balance: RowData) => ({
+                id: balance.member_id.toString(),
+                memberName: balance.name,
+                pays: balance.total_paid || 0,
+                owes: balance.total_owed || 0
+            }));
+            setBalances(transformedBalances);
+
+            const transformedOwesData: MarkAsPaidProps[] = owesData.map((owe: RowData, index: number) => ({
+                id: index.toString(),
+                owner: owe.creditor_name,
+                target: owe.debtor_name,
+                amount: owe.amount,
+                isMe: false,
+                debtorId: owe.from_member_id,
+                creditorId: owe.to_member_id
+            }));
+            setWhoOwesWho(transformedOwesData);
+        } catch (error) {
+            console.error("Failed to load balance data:", error);
+        }
+    };
+
     useEffect(() => {
-        const loadBalanceData = async () => {
-            try {
-                const memberBalances = await getMemberBalancesByGroupId(db, groupID);
-                const owesData = await getWhoOwesWhoByGroupId(db, parseInt(groupID));
-
-                const transformedBalances: MemberBalanceProps[] = memberBalances.map((balance: RowData) => ({
-                    id: balance.member_id.toString(),
-                    memberName: balance.name,
-                    pays: balance.total_paid || 0,
-                    owes: balance.total_owed || 0
-                }));
-                setBalances(transformedBalances);
-
-                const transformedOwesData: MarkAsPaidProps[] = owesData.map((owe: RowData, index: number) => ({
-                    id: index.toString(),
-                    owner: owe.creditor_name,
-                    target: owe.debtor_name,
-                    amount: owe.amount,
-                    isMe: false,
-                    debtorId: owe.from_member_id,
-                    creditorId: owe.to_member_id
-                }));
-                setWhoOwesWho(transformedOwesData);
-            } catch (error) {
-                console.error("Failed to load balance data:", error);
-            }
-        };
-
         loadBalanceData();
     }, [groupID]);
 
@@ -84,7 +84,7 @@ const BalancesRoute = ({ group }: { group: any }) => {
             </Text>
             <View className="mb-6">
                 {whoOwesWho.length > 0 ? (
-                    <MarkAsPaidsList balances={whoOwesWho} />
+                    <MarkAsPaidsList balances={whoOwesWho} onBalanceUpdate={loadBalanceData} />
                 ) : (
                     <EmptyCard message="No pending balances found." />
                 )}
@@ -153,7 +153,7 @@ export default function GroupDetail() {
                                     : 0,
                                 myExpense: 0,
                                 isCompleted: false,
-                                avatar: require("@/assets/images/avatar.png"),
+                                avatar: require("@/assets/images/trip-placeholder.png"),
                             };
                         }
                     )[0];
@@ -238,7 +238,7 @@ export default function GroupDetail() {
 
     const renderHeader = () => (
         <View className="mb-2">
-            <View className="flex-row items-top pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
+            <View className="flex-row items-center pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
                 <Pressable onPress={backAction}>
                     <Ionicons name="arrow-back" size={24} color="#000000" />
                 </Pressable>
@@ -262,7 +262,7 @@ export default function GroupDetail() {
                     }}
                 />
             </View>
-            <View className="bg-white px-8">
+            <View className="bg-white px-8 pb-4">
                 <Text className="font-bold text-xl text-typography-950">
                     {group?.name}
                 </Text>
