@@ -152,7 +152,7 @@ export async function getExpensesByGroupId(db: SQLite.SQLiteDatabase, groupId: n
   }
 }
 
-export async function getMemberBalancesByGroupId(db: SQLite.SQLiteDatabase, groupId: number) {
+export async function getMemberBalancesByGroupId(db: SQLite.SQLiteDatabase, groupId: string) {
   try {
     const balances: RowData[] = await db.getAllAsync(
       `SELECT member_id, name, total_paid, total_owed, balance

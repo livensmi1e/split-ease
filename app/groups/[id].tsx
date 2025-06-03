@@ -2,8 +2,10 @@ import AddExpenseButton from "@/components/AddExpenseButton";
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
+import { getMemberBalancesByGroupId, getWhoOwesWhoByGroupId } from "@/core/expenses";
 import { getGroup } from "@/core/groups";
-import { GroupItemProps, Participant, RowData } from "@/types/group";
+import { MarkAsPaidProps, MemberBalanceProps } from "@/types/balance";
+import { GroupItemProps, RowData } from "@/types/group";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -20,60 +22,72 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabView } from "react-native-tab-view";
-// Fake data function for now
-const getGroupDataById = (id: string | string[] | undefined) => {
-    return {
-        title: `Trip ${id}`,
-        numMembers: 3,
-        numExpenses: 4,
-        image: require("@/assets/images/trip-placeholder.png"),
-        members: [
-            { id: "1", pays: 10, owes: 20, memberName: "Member 1" },
-            { id: "2", pays: 10, owes: 20, memberName: "Member 2" },
-            { id: "3", pays: 10, owes: 20, memberName: "Member 3" },
-        ],
-        balances: [
-            {
-                id: "1",
-                owner: "Member 1",
-                target: "Member 2",
-                amount: 10,
-                isMe: false,
-            },
-            {
-                id: "2",
-                owner: "Member 1",
-                target: "Member 3",
-                amount: 10,
-                isMe: true,
-            },
-        ],
-    };
-};
 
-const ExpensesRoute = () => (
-    <View className="flex-1 bg-white p-4">
-        <Text className="text-lg mb-4">Expenses content</Text>
-        <ExpensesList />
-    </View>
-);
+const ExpensesRoute = () => {
+    return (
+        <View className="flex-1 bg-white p-4">
+            <Text className="text-lg mb-4">Expenses content</Text>
+            <ExpensesList />
+        </View>
+    );
+}
 
-const BalancesRoute = ({ group }: { group: any }) => (
-    <View className="flex-1 bg-white px-4 pt-4">
-        <Text className="text-typography-700 font-medium text-base mb-4">
-            Pending Balances
-        </Text>
-        <View className="mb-6">
-            <MarkAsPaidsList balances={getGroupDataById("1").balances} />
+const BalancesRoute = ({ group }: { group: any }) => {
+    const [balances, setBalances] = useState<MemberBalanceProps[]>([]);
+    const [whoOwesWho, setWhoOwesWho] = useState<MarkAsPaidProps[]>([]);
+    const db = useSQLiteContext();
+    const { id } = useLocalSearchParams();
+    const groupID = Array.isArray(id) ? id[0] : id;
+
+    useEffect(() => {
+        const loadBalanceData = async () => {
+            try {
+                const memberBalances = await getMemberBalancesByGroupId(db, groupID);
+                const owesData = await getWhoOwesWhoByGroupId(db, parseInt(groupID));
+
+                // Transform member balances data
+                const transformedBalances: MemberBalanceProps[] = memberBalances.map((balance: RowData) => ({
+                    id: balance.member_id.toString(),
+                    memberName: balance.name,
+                    pays: balance.total_paid || 0,
+                    owes: balance.total_owed || 0
+                }));
+                setBalances(transformedBalances);
+
+                // Transform who owes who data
+                const transformedOwesData: MarkAsPaidProps[] = owesData.map((owe: RowData, index: number) => ({
+                    id: index.toString(),
+                    owner: owe.creditor_name,
+                    target: owe.debtor_name,
+                    amount: owe.amount,
+                    isMe: false // TODO: Add logic to determine if the current user is involved
+                }));
+                setWhoOwesWho(transformedOwesData);
+            } catch (error) {
+                console.error("Failed to load balance data:", error);
+            }
+        };
+
+        loadBalanceData();
+    }, [groupID]);
+
+    return (
+        <View className="flex-1 bg-white px-4 pt-4">
+            <Text className="text-typography-700 font-medium text-base mb-4">
+                Pending Balances
+            </Text>
+            <View className="mb-6">
+                <MarkAsPaidsList balances={whoOwesWho} />
+            </View>
+            <Text className="text-typography-700 font-medium text-base mb-4">
+                See group member balances
+            </Text>
+            <View>
+                <MemberBalancesList members={balances} />
+            </View>
         </View>
-        <Text className="text-typography-700 font-medium text-base mb-4">
-            See group member balances
-        </Text>
-        <View>
-            <MemberBalancesList members={getGroupDataById("1").members} />
-        </View>
-    </View>
-);
+    );
+}
 
 const PhotosRoute = () => (
     <View className="flex-1 bg-white p-6 items-center">
@@ -104,39 +118,39 @@ export default function GroupDetail() {
     const router = useRouter();
     const fadeAnim = useRef(new Animated.Value(1)).current;
     const db = useSQLiteContext();
-    const groupID = Array.isArray(id)? id[0]: id;
-    useEffect(()=>{
-        const loadGroupData =async ()=>{
-            try{
+    const groupID = Array.isArray(id) ? id[0] : id;
+    useEffect(() => {
+        const loadGroupData = async () => {
+            try {
                 const res = await getGroup(db, groupID);
-                    if (res) {
-                        const formattedData: GroupItemProps = res.map(
-                            (row: RowData) => {
-                                return {
-                                    id: row.id as number,
-                                    name: row.name as string,
-                                    activityCount: row.activityCount as number,
-                                    memberCount: row.memberCount as number,
-                                    totalExpense: row.totalAmount
-                                        ? (row.totalAmount as number)
-                                        : 0,
-                                    myExpense: 0,
-                                    isCompleted: false,
-                                    avatar: require("@/assets/images/avatar.png"),
-                                };
-                            }
-                        )[0];
-                        console.log(formattedData);
-                        setGroup(formattedData);
-                    }
+                if (res) {
+                    const formattedData: GroupItemProps = res.map(
+                        (row: RowData) => {
+                            return {
+                                id: row.id as number,
+                                name: row.name as string,
+                                activityCount: row.activityCount as number,
+                                memberCount: row.memberCount as number,
+                                totalExpense: row.totalAmount
+                                    ? (row.totalAmount as number)
+                                    : 0,
+                                myExpense: 0,
+                                isCompleted: false,
+                                avatar: require("@/assets/images/avatar.png"),
+                            };
+                        }
+                    )[0];
+                    console.log(formattedData);
+                    setGroup(formattedData);
+                }
             }
-            catch(error){
+            catch (error) {
                 console.error("Fail go get group data: ", error)
             }
         }
-        
+
         loadGroupData();
-    },[id])
+    }, [id])
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -158,15 +172,13 @@ export default function GroupDetail() {
                 return (
                     <Pressable
                         key={route.key}
-                        className={`flex-1 py-3 rounded-xl items-center ${
-                            focused ? "bg-blue-600" : ""
-                        }`}
+                        className={`flex-1 py-3 rounded-xl items-center ${focused ? "bg-blue-600" : ""
+                            }`}
                         onPress={() => setIndex(i)}
                     >
                         <Text
-                            className={`text-sm ${
-                                focused ? "text-white font-bold" : "text-black"
-                            }`}
+                            className={`text-sm ${focused ? "text-white font-bold" : "text-black"
+                                }`}
                         >
                             {route.title}
                         </Text>
