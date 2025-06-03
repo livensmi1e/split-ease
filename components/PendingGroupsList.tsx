@@ -12,9 +12,8 @@ function PendingGroupItem({ group }: { group: GroupItemProps }) {
     return (
         <View
             className="p-4 border-border-200 bg-background-50 rounded-lg border-[1px]"
-            style={{ width: windowWidth }} // hoặc windowWidth - 32 nhưng phải khớp với snapToInterval
+            style={{ width: windowWidth - 32 }} // hoặc windowWidth - 32 nhưng phải khớp với snapToInterval
         >
-
             <Text className="text-lg font-semibold mb-4">{group.name}</Text>
             <HStack className="justify-between">
                 <VStack className="flex-1" space="lg">
@@ -34,9 +33,7 @@ function PendingGroupItem({ group }: { group: GroupItemProps }) {
                     </HStack>
                 </VStack>
                 <VStack className="items-end" space="md">
-                    <Text className="text-primary-500 font-semibold">
-                        My Expense: {group.myExpense}
-                    </Text>
+                    <Text className="text-primary-500 font-semibold"></Text>
                     <Text className="text-primary-500 font-semibold">
                         Total: {group.totalExpense}
                     </Text>
@@ -61,10 +58,9 @@ export default function PendingGroupsList({
             )}
             horizontal
             showsHorizontalScrollIndicator={false}
-            snapToInterval={windowWidth} // hoặc windowWidth - 32 nếu item width = windowWidth - 32
+            snapToInterval={windowWidth} // trùng với width item thực tế// hoặc windowWidth - 32 nếu item width = windowWidth - 32
             decelerationRate="fast"
             ItemSeparatorComponent={() => <Box className="w-4" />}
         />
     );
 }
-

@@ -13,11 +13,12 @@ export default function CreateGroup() {
     ) => {
         const res = await createGroup(db, name, currency);
         if (res) {
-            for (const p of participants) {
+            for (const [index, p] of participants.entries()) {
                 await addParticipant(
                     db,
                     res.lastInsertRowId.toString(),
-                    p.name
+                    p.name,
+                    index == 0 ? 1 : 0
                 );
             }
         }

@@ -90,3 +90,35 @@ export async function updateGroup(db: SQLite.SQLiteDatabase, obj: GroupUpdate) {
         console.error("Fail to update group: ", error);
     }
 }
+
+export async function getGroupsWithPendingDebt(db: SQLite.SQLiteDatabase) {
+    try {
+        const result = await db.getAllAsync<{
+            id: number;
+            name: string;
+            currency: string;
+            memberCount: number;
+            activityCount: number;
+            totalAmount: number | null;
+        }>(
+            `
+        SELECT 
+          g.id AS id,
+          g.name,
+          g.currency,
+          COUNT(DISTINCT m.id) AS memberCount,
+          COUNT(DISTINCT e.id) AS activityCount,
+          SUM(e.amount) AS totalAmount
+        FROM groups g
+        JOIN who_owes_who w ON g.id = w.group_id AND w.amount > 0
+        LEFT JOIN member m ON g.id = m.group_id
+        LEFT JOIN expense e ON g.id = e.group_id
+        GROUP BY g.id, g.name, g.currency
+        `
+        );
+        return result;
+    } catch (error) {
+        console.error("Fail to get groups with pending debt details: ", error);
+        throw error;
+    }
+}

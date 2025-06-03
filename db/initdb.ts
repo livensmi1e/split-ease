@@ -1,8 +1,8 @@
 import * as SQLite from "expo-sqlite";
 
 export const initDatabase = async (db: SQLite.SQLiteDatabase) => {
-  try {
-    db.execSync(`
+    try {
+        db.execSync(`
       PRAGMA foreign_keys = ON;
 
       CREATE TABLE IF NOT EXISTS groups (
@@ -15,6 +15,7 @@ export const initDatabase = async (db: SQLite.SQLiteDatabase) => {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         group_id INTEGER,
+        isMe INTEGER DEFAULT 0,
         FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE
       );
 
@@ -151,24 +152,22 @@ JOIN groups g ON m.group_id = g.id;
 
     `);
 
-    console.log("✅ Các bảng và view đã được tạo thành công!");
-  } catch (error) {
-    console.error("❌ Lỗi khi tạo bảng:", error);
-    throw error;
-  }
+        console.log("✅ Các bảng và view đã được tạo thành công!");
+    } catch (error) {
+        console.error("❌ Lỗi khi tạo bảng:", error);
+        throw error;
+    }
 };
-
 
 export const dropAllTables = async (db: SQLite.SQLiteDatabase) => {
     const tableNames = ["expense_share", "expense", "member", "groups"]; // đúng thứ tự phụ thuộc
 
     for (const name of tableNames) {
-    try {
-        await db.runAsync(`DROP TABLE IF EXISTS ${name}`);
-        console.log(`✅ Đã xoá bảng ${name}`);
-    } catch (err) {
-        console.error(`❌ Lỗi khi xoá bảng ${name}:`, err);
+        try {
+            await db.runAsync(`DROP TABLE IF EXISTS ${name}`);
+            console.log(`✅ Đã xoá bảng ${name}`);
+        } catch (err) {
+            console.error(`❌ Lỗi khi xoá bảng ${name}:`, err);
+        }
     }
-    }
-
 };
