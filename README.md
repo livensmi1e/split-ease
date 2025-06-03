@@ -6,19 +6,17 @@
 
 ### Features
 
--   [ ] Create & manage spending activities
--   [ ] Add individual expenses to an activity
--   [ ] Support for equal cost-splitting among group members
--   [ ] Track who paid and who owes
--   [ ] Display payment status (e.g., settled, pending)
+-   [x] Create & manage spending activities
+-   [x] Add individual expenses to an activity
+-   [x] Support for equal cost-splitting among group members
+-   [x] Track who paid and who owes
+-   [x] Display payment status (e.g., settled, pending)
 -   [ ] Upload and view receipts (images/files)
 -   [ ] Support expense categorization (e.g., food, travel, rent)
--   [ ] Basic user interface using Gluestack UI + Tailwind
--   [ ] Responsive layout for mobile screens
+-   [x] Basic user interface using Gluestack UI + Tailwind
 
 -   [ ] Support percentage-based splits (e.g., custom ratios)
 -   [ ] Add localization support (English & Vietnamese)
--   [ ] Implement payment reminders (push notifications or alerts)
 -   [ ] Add light/dark mode toggle
 
 ### Development
