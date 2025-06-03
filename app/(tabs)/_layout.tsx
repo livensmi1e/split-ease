@@ -71,7 +71,7 @@ export default function TabLayout() {
             <Tabs.Screen
                 name="snap"
                 options={{
-                    title: "Settings",
+                    title: "Snap",
                     tabBarIcon: ({ color }) => (
                         <FontAwesome name="camera" size={22} color={color} />
                     ),
