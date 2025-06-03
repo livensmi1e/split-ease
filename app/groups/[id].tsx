@@ -1,8 +1,12 @@
+import AddExpenseButton from "@/components/AddExpenseButton";
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
+import { getGroup } from "@/core/groups";
+import { GroupItemProps, Participant, RowData } from "@/types/group";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useRef, useState } from "react";
 import {
     Animated,
@@ -16,7 +20,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabView } from "react-native-tab-view";
-
 // Fake data function for now
 const getGroupDataById = (id: string | string[] | undefined) => {
     return {
@@ -61,13 +64,13 @@ const BalancesRoute = ({ group }: { group: any }) => (
             Pending Balances
         </Text>
         <View className="mb-6">
-            <MarkAsPaidsList balances={group.balances} />
+            <MarkAsPaidsList balances={getGroupDataById("1").balances} />
         </View>
         <Text className="text-typography-700 font-medium text-base mb-4">
             See group member balances
         </Text>
         <View>
-            <MemberBalancesList members={group.members} />
+            <MemberBalancesList members={getGroupDataById("1").members} />
         </View>
     </View>
 );
@@ -94,11 +97,46 @@ const routes = [
 
 export default function GroupDetail() {
     const { id } = useLocalSearchParams();
-    const group = getGroupDataById(id); // Mock function - Need to be replaced by actual function
+    // const group = getGroupDataById(id); // Mock function - Need to be replaced by actual function
+    const [group, setGroup] = useState<GroupItemProps>()
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
     const router = useRouter();
     const fadeAnim = useRef(new Animated.Value(1)).current;
+    const db = useSQLiteContext();
+    const groupID = Array.isArray(id)? id[0]: id;
+    useEffect(()=>{
+        const loadGroupData =async ()=>{
+            try{
+                const res = await getGroup(db, groupID);
+                    if (res) {
+                        const formattedData: GroupItemProps = res.map(
+                            (row: RowData) => {
+                                return {
+                                    id: row.id as number,
+                                    name: row.name as string,
+                                    activityCount: row.activityCount as number,
+                                    memberCount: row.memberCount as number,
+                                    totalExpense: row.totalAmount
+                                        ? (row.totalAmount as number)
+                                        : 0,
+                                    myExpense: 0,
+                                    isCompleted: false,
+                                    avatar: require("@/assets/images/avatar.png"),
+                                };
+                            }
+                        )[0];
+                        console.log(formattedData);
+                        setGroup(formattedData);
+                    }
+            }
+            catch(error){
+                console.error("Fail go get group data: ", error)
+            }
+        }
+        
+        loadGroupData();
+    },[id])
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -185,7 +223,7 @@ export default function GroupDetail() {
             </View>
             <View className="px-8 -mt-10">
                 <Image
-                    source={group.image}
+                    source={group?.avatar}
                     style={{
                         width: 80,
                         height: 80,
@@ -197,19 +235,26 @@ export default function GroupDetail() {
             </View>
             <View className="bg-white px-8">
                 <Text className="font-bold text-xl text-typography-950">
-                    {group.title}
+                    {group?.name}
                 </Text>
                 <View className="flex-row mt-1">
                     <Text className="text-xs text-typography-950">
-                        {group.numMembers} members
+                        {group?.memberCount} members
                     </Text>
                     <Text className="text-xs text-typography-950 px-2">
-                        {group.numExpenses} expenses
+                        {group?.activityCount} expenses
                     </Text>
                 </View>
             </View>
         </View>
     );
+
+    const addExpense = () => {
+        router.push({
+            pathname: "/expenses/create",
+            params: { groupId: Array.isArray(id) ? id[0] : id ?? "" }
+        });
+    };
 
     return (
         <SafeAreaView className="bg-white h-full flex-1">
@@ -224,6 +269,9 @@ export default function GroupDetail() {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={() => null}
             />
+            <View className="absolute bottom-16 right-8">
+                <AddExpenseButton onPress={addExpense} />
+            </View>
         </SafeAreaView>
     );
 }

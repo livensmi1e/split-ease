@@ -43,7 +43,17 @@ export async function getAllGroup(db: SQLite.SQLiteDatabase) {
 export async function getGroup(db: SQLite.SQLiteDatabase, id: string) {
     try {
         const result: RowData[] = await db.getAllAsync(
-            "SELECT * FROM groups WHERE id=?",
+            `SELECT g.id,
+            g.name,
+            g.currency,
+            COUNT(DISTINCT m.id) AS memberCount,
+            COUNT(DISTINCT e.id) AS activityCount,
+            SUM(e.amount) AS totalAmount
+            FROM groups g
+            LEFT JOIN member m ON g.id = m.group_id
+            LEFT JOIN expense e ON g.id = e.group_id
+            WHERE g.id = ?
+             `,
             [id]
         );
         return result;

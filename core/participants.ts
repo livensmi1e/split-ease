@@ -34,6 +34,16 @@ export async function getParticipantsByGroupID(
     }
 }
 
+// export async function getParticipantInfoByGroupID(db: SQLite.SQLiteDatabase, groupID: string){
+//     try{
+
+//     }
+//     catch(error){
+//         console.error("Fail to get participant info of group: ", error);
+//         return null;
+//     }
+// }
+
 export async function updateParticipant(
     db: SQLite.SQLiteDatabase,
     id: number,
