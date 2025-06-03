@@ -14,7 +14,7 @@ export default function CreateExpense() {
     const router = useRouter();
 
     return (
-        <SafeAreaView className="flex-1 bg-white">
+        <SafeAreaView className="flex-1 bg-white mt-5">
             <ScrollView
                 contentContainerStyle={{ padding: 16 }}
                 showsVerticalScrollIndicator={false}
