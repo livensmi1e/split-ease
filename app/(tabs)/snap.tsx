@@ -1,10 +1,11 @@
 import React from "react";
-import { Text, View } from "react-native";
+import { Text } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Snap() {
     return (
-        <View>
+        <SafeAreaView className="p-4 pt-0 bg-background-0 h-full flex-1 items-center justify-center">
             <Text>Not implemented</Text>
-        </View>
+        </SafeAreaView>
     );
 }
