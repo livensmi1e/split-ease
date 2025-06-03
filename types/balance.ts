@@ -9,6 +9,8 @@ export type MarkAsPaidProps = {
     target: string;
     amount: number;
     isMe: boolean;
+    debtorId: number;
+    creditorId: number;
     onMarkAsPaid?: () => void;
 };
 

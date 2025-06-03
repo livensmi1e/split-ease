@@ -1,5 +1,8 @@
+import { getExpense, updateExpense } from "@/core/expenses";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
+import { useEffect, useState } from "react";
 import {
     Image,
     SafeAreaView,
@@ -12,6 +15,46 @@ import {
 
 export default function UpdateExpense() {
     const router = useRouter();
+    const { id } = useLocalSearchParams();
+    const db = useSQLiteContext();
+    const [description, setDescription] = useState("");
+    const [amount, setAmount] = useState("");
+
+    useEffect(() => {
+        const loadExpense = async () => {
+            try {
+                const expense = await getExpense(db, parseInt(id as string));
+                if (expense && Array.isArray(expense) && expense.length > 0) {
+                    setDescription(expense[0].description as string);
+                    setAmount(expense[0].amount.toString());
+                }
+            } catch (error) {
+                console.error("Failed to load expense:", error);
+            }
+        };
+
+        loadExpense();
+    }, [id]);
+
+    const handleUpdateExpense = async () => {
+        if (!description || !amount) return;
+        
+        try {
+            const success = await updateExpense(
+                db,
+                parseInt(id as string),
+                description,
+                parseFloat(amount)
+            );
+            
+            if (success) {
+                router.back();
+            }
+        } catch (error) {
+            console.error("Failed to update expense:", error);
+        }
+    };
+
     return (
         <SafeAreaView className="flex-1 bg-white">
             <ScrollView
@@ -24,7 +67,7 @@ export default function UpdateExpense() {
                         <Ionicons name="close" size={28} />
                     </TouchableOpacity>
                     <Text className="text-xl font-bold">Edit expense</Text>
-                    <TouchableOpacity onPress={() => {}}>
+                    <TouchableOpacity onPress={handleUpdateExpense}>
                         <Ionicons name="checkmark" size={28} />
                     </TouchableOpacity>
                 </View>
@@ -39,6 +82,8 @@ export default function UpdateExpense() {
                     </View>
                     <TextInput
                         placeholder="The hotel"
+                        value={description}
+                        onChangeText={setDescription}
                         className="flex-1 border-b border-gray-300 text-md pb-1 text-typography-600"
                     />
                 </View>
@@ -61,6 +106,8 @@ export default function UpdateExpense() {
                 <Text className="text-md text-typography-800 mb-3">Amount</Text>
                 <TextInput
                     placeholder="0.00"
+                    value={amount}
+                    onChangeText={setAmount}
                     keyboardType="numeric"
                     className="border border-gray-300 rounded-md px-4 py-3 text-md mb-6"
                 />

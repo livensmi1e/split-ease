@@ -18,6 +18,8 @@ export type GroupUpdate = {
 export interface Participant {
   id: number;
   name: string;
+  pays?: number;
+  owes?: number;
 }
 
 

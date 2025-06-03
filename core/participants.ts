@@ -4,13 +4,14 @@ import * as SQLite from "expo-sqlite";
 export async function addParticipant(
     db: SQLite.SQLiteDatabase,
     groupID: string,
-    name: string
+    name: string,
+    isMe: number = 0 // 0 or 1
 ) {
     try {
-        await db.runAsync("INSERT INTO member (name, group_id) VALUES (?, ?)", [
-            name,
-            parseInt(groupID),
-        ]);
+        await db.runAsync(
+            "INSERT INTO member (name, group_id, isMe) VALUES (?, ?, ?)",
+            [name, parseInt(groupID), isMe]
+        );
         return true;
     } catch (error) {
         console.error("Fail to add participant: ", error);
@@ -33,6 +34,16 @@ export async function getParticipantsByGroupID(
         return null;
     }
 }
+
+// export async function getParticipantInfoByGroupID(db: SQLite.SQLiteDatabase, groupID: string){
+//     try{
+
+//     }
+//     catch(error){
+//         console.error("Fail to get participant info of group: ", error);
+//         return null;
+//     }
+// }
 
 export async function updateParticipant(
     db: SQLite.SQLiteDatabase,
@@ -86,3 +97,15 @@ export const syncParticipants = async (
         }
     }
 };
+
+export async function getIsMeParticipant(db: SQLite.SQLiteDatabase) {
+    try {
+        const result: RowData[] = await db.getAllAsync(
+            "SELECT * FROM member WHERE isMe = 1"
+        );
+        return result;
+    } catch (error) {
+        console.error("Fail to get participant of group: ", error);
+        return null;
+    }
+}

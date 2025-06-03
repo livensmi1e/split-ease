@@ -1,8 +1,17 @@
+import AddExpenseButton from "@/components/AddExpenseButton";
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
+import {
+    getMemberBalancesByGroupId,
+    getWhoOwesWhoByGroupId,
+} from "@/core/expenses";
+import { getGroup } from "@/core/groups";
+import { MarkAsPaidProps, MemberBalanceProps } from "@/types/balance";
+import { GroupItemProps, RowData } from "@/types/group";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
+import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useRef, useState } from "react";
 import {
     Animated,
@@ -17,60 +26,97 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabView } from "react-native-tab-view";
 
-// Fake data function for now
-const getGroupDataById = (id: string | string[] | undefined) => {
-    return {
-        title: `Trip ${id}`,
-        numMembers: 3,
-        numExpenses: 4,
-        image: require("@/assets/images/trip-placeholder.png"),
-        members: [
-            { id: "1", pays: 10, owes: 20, memberName: "Member 1" },
-            { id: "2", pays: 10, owes: 20, memberName: "Member 2" },
-            { id: "3", pays: 10, owes: 20, memberName: "Member 3" },
-        ],
-        balances: [
-            {
-                id: "1",
-                owner: "Member 1",
-                target: "Member 2",
-                amount: 10,
-                isMe: false,
-            },
-            {
-                id: "2",
-                owner: "Member 1",
-                target: "Member 3",
-                amount: 10,
-                isMe: true,
-            },
-        ],
-    };
+const ExpensesRoute = () => {
+    return (
+        <View className="flex-1 bg-white p-4">
+            <ExpensesList />
+        </View>
+    );
 };
 
-const ExpensesRoute = () => (
-    <View className="flex-1 bg-white p-4">
-        <Text className="text-lg mb-4">Expenses content</Text>
-        <ExpensesList />
+const EmptyCard = ({ message }: { message: string }) => (
+    <View className="border border-dashed border-gray-300 p-4 rounded-lg bg-gray-50">
+        <Text className="text-center text-gray-500">{message}</Text>
     </View>
 );
 
-const BalancesRoute = ({ group }: { group: any }) => (
-    <View className="flex-1 bg-white px-4 pt-4">
-        <Text className="text-typography-700 font-medium text-base mb-4">
-            Pending Balances
-        </Text>
-        <View className="mb-6">
-            <MarkAsPaidsList balances={group.balances} />
+const BalancesRoute = ({ group }: { group: any }) => {
+    const [balances, setBalances] = useState<MemberBalanceProps[]>([]);
+    const [whoOwesWho, setWhoOwesWho] = useState<MarkAsPaidProps[]>([]);
+    const db = useSQLiteContext();
+    const { id } = useLocalSearchParams();
+    const groupID = Array.isArray(id) ? id[0] : id;
+
+    const loadBalanceData = async () => {
+        try {
+            const memberBalances = await getMemberBalancesByGroupId(
+                db,
+                groupID
+            );
+            const owesData = await getWhoOwesWhoByGroupId(
+                db,
+                parseInt(groupID)
+            );
+
+            const transformedBalances: MemberBalanceProps[] =
+                memberBalances.map((balance: RowData) => ({
+                    id: balance.member_id.toString(),
+                    memberName: balance.name,
+                    pays: balance.total_paid || 0,
+                    owes: balance.total_owed || 0,
+                }));
+            setBalances(transformedBalances);
+
+            const transformedOwesData: MarkAsPaidProps[] = owesData.map(
+                (owe: RowData, index: number) => ({
+                    id: index.toString(),
+                    owner: owe.creditor_name,
+                    target: owe.debtor_name,
+                    amount: owe.amount,
+                    isMe: false,
+                    debtorId: owe.from_member_id,
+                    creditorId: owe.to_member_id,
+                })
+            );
+            setWhoOwesWho(transformedOwesData);
+        } catch (error) {
+            console.error("Failed to load balance data:", error);
+        }
+    };
+
+    useEffect(() => {
+        loadBalanceData();
+    }, [groupID]);
+
+    return (
+        <View className="flex-1 bg-white px-4 pt-4">
+            <Text className="text-typography-700 font-medium text-base mb-4">
+                Pending Balances
+            </Text>
+            <View className="mb-6">
+                {whoOwesWho.length > 0 ? (
+                    <MarkAsPaidsList
+                        balances={whoOwesWho}
+                        onBalanceUpdate={loadBalanceData}
+                    />
+                ) : (
+                    <EmptyCard message="No pending balances found." />
+                )}
+            </View>
+
+            <Text className="text-typography-700 font-medium text-base mb-4">
+                See group member balances
+            </Text>
+            <View>
+                {balances.length > 0 ? (
+                    <MemberBalancesList members={balances} />
+                ) : (
+                    <EmptyCard message="No member balances available." />
+                )}
+            </View>
         </View>
-        <Text className="text-typography-700 font-medium text-base mb-4">
-            See group member balances
-        </Text>
-        <View>
-            <MemberBalancesList members={group.members} />
-        </View>
-    </View>
-);
+    );
+};
 
 const PhotosRoute = () => (
     <View className="flex-1 bg-white p-6 items-center">
@@ -94,11 +140,47 @@ const routes = [
 
 export default function GroupDetail() {
     const { id } = useLocalSearchParams();
-    const group = getGroupDataById(id); // Mock function - Need to be replaced by actual function
+    // const group = getGroupDataById(id); // Mock function - Need to be replaced by actual function
+    const [group, setGroup] = useState<GroupItemProps>();
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
     const router = useRouter();
     const fadeAnim = useRef(new Animated.Value(1)).current;
+    const db = useSQLiteContext();
+    const groupID = Array.isArray(id) ? id[0] : id;
+    useEffect(() => {
+        const loadGroupData = async () => {
+            try {
+                // await db.runAsync("DELETE FROM expense")
+                // await db.runAsync("Delete from settlement")
+                const res = await getGroup(db, groupID);
+                if (res) {
+                    const formattedData: GroupItemProps = res.map(
+                        (row: RowData) => {
+                            return {
+                                id: row.id as number,
+                                name: row.name as string,
+                                activityCount: row.activityCount as number,
+                                memberCount: row.memberCount as number,
+                                totalExpense: row.totalAmount
+                                    ? (row.totalAmount as number)
+                                    : 0,
+                                myExpense: 0,
+                                isCompleted: false,
+                                avatar: require("@/assets/images/trip-placeholder.png"),
+                            };
+                        }
+                    )[0];
+                    // console.log(formattedData);
+                    setGroup(formattedData);
+                }
+            } catch (error) {
+                console.error("Fail go get group data: ", error);
+            }
+        };
+
+        loadGroupData();
+    }, [id]);
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -171,7 +253,7 @@ export default function GroupDetail() {
 
     const renderHeader = () => (
         <View className="mb-2">
-            <View className="flex-row items-top pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
+            <View className="flex-row items-center pt-0 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
                 <Pressable onPress={backAction}>
                     <Ionicons name="arrow-back" size={24} color="#000000" />
                 </Pressable>
@@ -183,9 +265,9 @@ export default function GroupDetail() {
                     />
                 </Pressable>
             </View>
-            <View className="px-8 -mt-10">
+            <View className="px-8 -mt-7">
                 <Image
-                    source={group.image}
+                    source={group?.avatar}
                     style={{
                         width: 80,
                         height: 80,
@@ -195,21 +277,28 @@ export default function GroupDetail() {
                     }}
                 />
             </View>
-            <View className="bg-white px-8">
+            <View className="bg-white px-8 pb-4">
                 <Text className="font-bold text-xl text-typography-950">
-                    {group.title}
+                    {group?.name}
                 </Text>
                 <View className="flex-row mt-1">
                     <Text className="text-xs text-typography-950">
-                        {group.numMembers} members
+                        {group?.memberCount} members
                     </Text>
                     <Text className="text-xs text-typography-950 px-2">
-                        {group.numExpenses} expenses
+                        {group?.activityCount} expenses
                     </Text>
                 </View>
             </View>
         </View>
     );
+
+    const addExpense = () => {
+        router.push({
+            pathname: "/expenses/create",
+            params: { groupId: Array.isArray(id) ? id[0] : id ?? "" },
+        });
+    };
 
     return (
         <SafeAreaView className="bg-white h-full flex-1">
@@ -224,6 +313,9 @@ export default function GroupDetail() {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={() => null}
             />
+            <View className="absolute bottom-24 right-4">
+                <AddExpenseButton onPress={addExpense} />
+            </View>
         </SafeAreaView>
     );
 }

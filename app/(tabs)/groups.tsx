@@ -22,7 +22,7 @@ export default function Groups() {
                             activityCount: row.activityCount as number,
                             memberCount: row.memberCount as number,
                             totalExpense: row.totalAmount
-                                ? (row.totalAmount as number)
+                                ? ((row.totalAmount / 2) as number)
                                 : 0,
                             myExpense: 0,
                             isCompleted: false,
