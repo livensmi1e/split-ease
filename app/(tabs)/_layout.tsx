@@ -1,10 +1,13 @@
+import TabbarButton from "@/components/TabbarButton";
+import { Feather } from "@expo/vector-icons";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import React from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabLayout() {
     const insets = useSafeAreaInsets();
+    const router = useRouter();
     return (
         <Tabs
             screenOptions={{
@@ -49,6 +52,32 @@ export default function TabLayout() {
                 }}
             />
             <Tabs.Screen
+                name="create.placeholder"
+                options={{
+                    title: "",
+                    tabBarIcon: ({ focused, color, size }) => (
+                        <Feather name="plus" size={28} color="#FFFFFF" />
+                    ),
+                    tabBarButton: (props) => <TabbarButton {...props} />,
+                    tabBarLabel: () => null,
+                }}
+                listeners={{
+                    tabPress: (e) => {
+                        e.preventDefault();
+                        router.push("/expenses/create");
+                    },
+                }}
+            />
+            <Tabs.Screen
+                name="snap"
+                options={{
+                    title: "Snap",
+                    tabBarIcon: ({ color }) => (
+                        <FontAwesome name="camera" size={22} color={color} />
+                    ),
+                }}
+            />
+            <Tabs.Screen
                 name="settings"
                 options={{
                     title: "Settings",
@@ -57,7 +86,7 @@ export default function TabLayout() {
                     ),
                 }}
             />
-            <Tabs.Screen
+            {/* <Tabs.Screen
                 name="test"
                 options={{
                     title: "Test",
@@ -65,7 +94,7 @@ export default function TabLayout() {
                         <FontAwesome name="gear" size={24} color={color} />
                     ),
                 }}
-            />
+            /> */}
         </Tabs>
     );
 }

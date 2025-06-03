@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { ChevronDownIcon } from "@/components/ui/icon";
 import {
   Select,
@@ -12,24 +11,25 @@ import {
   SelectPortal,
   SelectTrigger,
 } from "@/components/ui/select";
+import { getAllGroup, getGroup } from "@/core/groups";
+import { getParticipantsByGroupID } from "@/core/participants";
+import { Participant } from "@/types/group";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
+  Animated,
   Image,
+  KeyboardAvoidingView, // Add KeyboardAvoidingView
+  Platform,
   SafeAreaView,
   ScrollView,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Animated,
-  KeyboardAvoidingView, // Add KeyboardAvoidingView
-  Platform, // Add Platform
 } from "react-native";
-import { Participant } from "@/types/group";
-import { getParticipantsByGroupID } from "@/core/participants";
-import { getGroup, getAllGroup } from "@/core/groups";
 
 type Group = {
   id: number;

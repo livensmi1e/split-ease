@@ -1,16 +1,10 @@
 import { getExpensesByGroupId } from "@/core/expenses";
 import { RowData } from "@/types/group";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
 import { useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useEffect, useState } from "react";
-import {
-    Pressable,
-    SectionList,
-    Text,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { Pressable, SectionList, Text, View } from "react-native";
 
 type ExpenseItem = {
     id: string;
@@ -47,13 +41,6 @@ function ExpenseItem({ item }: { item: ExpenseItem }) {
                 <Text className="text-primary-500 text-lg font-bold mr-2">
                     {item.amount}
                 </Text>
-                <TouchableOpacity>
-                    <FontAwesome
-                        name="angle-right"
-                        color="#666"
-                        size={28}
-                    ></FontAwesome>
-                </TouchableOpacity>
             </View>
         </Pressable>
     );
@@ -67,7 +54,8 @@ export default function ExpensesList() {
 
     const formatDate = (date: Date): string => {
         const today = new Date();
-        const isToday = date.getDate() === today.getDate() &&
+        const isToday =
+            date.getDate() === today.getDate() &&
             date.getMonth() === today.getMonth() &&
             date.getFullYear() === today.getFullYear();
 
@@ -75,48 +63,60 @@ export default function ExpensesList() {
             return "Today";
         }
 
-        return date.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
+        return date.toLocaleDateString("en-US", {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
         });
     };
 
     useEffect(() => {
         const loadExpenses = async () => {
             try {
-                const expenses = await getExpensesByGroupId(db, parseInt(groupID));
+                const expenses = await getExpensesByGroupId(
+                    db,
+                    parseInt(groupID)
+                );
 
                 // Group expenses by date
-                const groupedExpenses = expenses.reduce((acc: { [key: string]: ExpenseItem[] }, expense: RowData) => {
-                    const date = new Date(expense.created_at);
-                    const dateStr = formatDate(date);
+                const groupedExpenses = expenses.reduce(
+                    (
+                        acc: { [key: string]: ExpenseItem[] },
+                        expense: RowData
+                    ) => {
+                        const date = new Date(expense.created_at);
+                        const dateStr = formatDate(date);
 
-                    const expenseItem: ExpenseItem = {
-                        id: expense.id.toString(),
-                        category: expense.description,
-                        payer: expense.paid_by_name,
-                        amount: `$${expense.amount.toFixed(2)}`,
-                        date: dateStr
-                    };
+                        const expenseItem: ExpenseItem = {
+                            id: expense.id.toString(),
+                            category: expense.description,
+                            payer: expense.paid_by_name,
+                            amount: `$${expense.amount.toFixed(2)}`,
+                            date: dateStr,
+                        };
 
-                    if (!acc[dateStr]) {
-                        acc[dateStr] = [];
-                    }
-                    acc[dateStr].push(expenseItem);
-                    return acc;
-                }, {});
+                        if (!acc[dateStr]) {
+                            acc[dateStr] = [];
+                        }
+                        acc[dateStr].push(expenseItem);
+                        return acc;
+                    },
+                    {}
+                );
 
                 // Convert to sections format and sort by date (most recent first)
                 const sectionsData = Object.entries(groupedExpenses)
                     .map(([date, items]) => ({
                         title: date,
-                        data: items
+                        data: items,
                     }))
                     .sort((a, b) => {
                         if (a.title === "Today") return -1;
                         if (b.title === "Today") return 1;
-                        return new Date(b.title).getTime() - new Date(a.title).getTime();
+                        return (
+                            new Date(b.title).getTime() -
+                            new Date(a.title).getTime()
+                        );
                     });
 
                 setSections(sectionsData);

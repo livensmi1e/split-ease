@@ -2,7 +2,10 @@ import AddExpenseButton from "@/components/AddExpenseButton";
 import ExpensesList from "@/components/ExpensesList";
 import MarkAsPaidsList from "@/components/MarkAsPaidsList";
 import MemberBalancesList from "@/components/MemberBalancesList";
-import { getMemberBalancesByGroupId, getWhoOwesWhoByGroupId } from "@/core/expenses";
+import {
+    getMemberBalancesByGroupId,
+    getWhoOwesWhoByGroupId,
+} from "@/core/expenses";
 import { getGroup } from "@/core/groups";
 import { MarkAsPaidProps, MemberBalanceProps } from "@/types/balance";
 import { GroupItemProps, RowData } from "@/types/group";
@@ -26,11 +29,10 @@ import { TabView } from "react-native-tab-view";
 const ExpensesRoute = () => {
     return (
         <View className="flex-1 bg-white p-4">
-            <Text className="text-lg mb-4">Expenses content</Text>
             <ExpensesList />
         </View>
     );
-}
+};
 
 const EmptyCard = ({ message }: { message: string }) => (
     <View className="border border-dashed border-gray-300 p-4 rounded-lg bg-gray-50">
@@ -47,26 +49,35 @@ const BalancesRoute = ({ group }: { group: any }) => {
 
     const loadBalanceData = async () => {
         try {
-            const memberBalances = await getMemberBalancesByGroupId(db, groupID);
-            const owesData = await getWhoOwesWhoByGroupId(db, parseInt(groupID));
+            const memberBalances = await getMemberBalancesByGroupId(
+                db,
+                groupID
+            );
+            const owesData = await getWhoOwesWhoByGroupId(
+                db,
+                parseInt(groupID)
+            );
 
-            const transformedBalances: MemberBalanceProps[] = memberBalances.map((balance: RowData) => ({
-                id: balance.member_id.toString(),
-                memberName: balance.name,
-                pays: balance.total_paid || 0,
-                owes: balance.total_owed || 0
-            }));
+            const transformedBalances: MemberBalanceProps[] =
+                memberBalances.map((balance: RowData) => ({
+                    id: balance.member_id.toString(),
+                    memberName: balance.name,
+                    pays: balance.total_paid || 0,
+                    owes: balance.total_owed || 0,
+                }));
             setBalances(transformedBalances);
 
-            const transformedOwesData: MarkAsPaidProps[] = owesData.map((owe: RowData, index: number) => ({
-                id: index.toString(),
-                owner: owe.creditor_name,
-                target: owe.debtor_name,
-                amount: owe.amount,
-                isMe: false,
-                debtorId: owe.from_member_id,
-                creditorId: owe.to_member_id
-            }));
+            const transformedOwesData: MarkAsPaidProps[] = owesData.map(
+                (owe: RowData, index: number) => ({
+                    id: index.toString(),
+                    owner: owe.creditor_name,
+                    target: owe.debtor_name,
+                    amount: owe.amount,
+                    isMe: false,
+                    debtorId: owe.from_member_id,
+                    creditorId: owe.to_member_id,
+                })
+            );
             setWhoOwesWho(transformedOwesData);
         } catch (error) {
             console.error("Failed to load balance data:", error);
@@ -84,7 +95,10 @@ const BalancesRoute = ({ group }: { group: any }) => {
             </Text>
             <View className="mb-6">
                 {whoOwesWho.length > 0 ? (
-                    <MarkAsPaidsList balances={whoOwesWho} onBalanceUpdate={loadBalanceData} />
+                    <MarkAsPaidsList
+                        balances={whoOwesWho}
+                        onBalanceUpdate={loadBalanceData}
+                    />
                 ) : (
                     <EmptyCard message="No pending balances found." />
                 )}
@@ -127,7 +141,7 @@ const routes = [
 export default function GroupDetail() {
     const { id } = useLocalSearchParams();
     // const group = getGroupDataById(id); // Mock function - Need to be replaced by actual function
-    const [group, setGroup] = useState<GroupItemProps>()
+    const [group, setGroup] = useState<GroupItemProps>();
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
     const router = useRouter();
@@ -160,14 +174,13 @@ export default function GroupDetail() {
                     // console.log(formattedData);
                     setGroup(formattedData);
                 }
+            } catch (error) {
+                console.error("Fail go get group data: ", error);
             }
-            catch (error) {
-                console.error("Fail go get group data: ", error)
-            }
-        }
+        };
 
         loadGroupData();
-    }, [id])
+    }, [id]);
 
     const renderScene = ({ route }: { route: { key: string } }) => {
         switch (route.key) {
@@ -189,13 +202,15 @@ export default function GroupDetail() {
                 return (
                     <Pressable
                         key={route.key}
-                        className={`flex-1 py-3 rounded-xl items-center ${focused ? "bg-blue-600" : ""
-                            }`}
+                        className={`flex-1 py-3 rounded-xl items-center ${
+                            focused ? "bg-blue-600" : ""
+                        }`}
                         onPress={() => setIndex(i)}
                     >
                         <Text
-                            className={`text-sm ${focused ? "text-white font-bold" : "text-black"
-                                }`}
+                            className={`text-sm ${
+                                focused ? "text-white font-bold" : "text-black"
+                            }`}
                         >
                             {route.title}
                         </Text>
@@ -238,7 +253,7 @@ export default function GroupDetail() {
 
     const renderHeader = () => (
         <View className="mb-2">
-            <View className="flex-row items-center pt-4 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
+            <View className="flex-row items-center pt-0 justify-between h-24 rounded-t-xl px-4 bg-primary-300">
                 <Pressable onPress={backAction}>
                     <Ionicons name="arrow-back" size={24} color="#000000" />
                 </Pressable>
@@ -250,7 +265,7 @@ export default function GroupDetail() {
                     />
                 </Pressable>
             </View>
-            <View className="px-8 -mt-10">
+            <View className="px-8 -mt-7">
                 <Image
                     source={group?.avatar}
                     style={{
@@ -281,7 +296,7 @@ export default function GroupDetail() {
     const addExpense = () => {
         router.push({
             pathname: "/expenses/create",
-            params: { groupId: Array.isArray(id) ? id[0] : id ?? "" }
+            params: { groupId: Array.isArray(id) ? id[0] : id ?? "" },
         });
     };
 
@@ -298,7 +313,7 @@ export default function GroupDetail() {
                 initialLayout={{ width: layout.width }}
                 renderTabBar={() => null}
             />
-            <View className="absolute bottom-16 right-8">
+            <View className="absolute bottom-24 right-4">
                 <AddExpenseButton onPress={addExpense} />
             </View>
         </SafeAreaView>
